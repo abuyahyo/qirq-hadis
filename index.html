@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<title>Имом Нававийнинг «Қирқ ҳадис» тўплами</title>
+<link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Amiri:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#c9a84c;--gold-light:#e8d08a;--gold-dark:#8b6914;--bg:#0d0b07;--surface:#1c1710;--surface2:#2d2718;--surface3:#221d11;--border:#3a3020;--border2:#4a4030;--text:#e8dcc8;--text-dim:#9a8f78;--text-muted:#5a5040;--izoh:#b8d4a8;--izoh-bg:rgba(74,110,64,0.1);--izoh-border:#4a6e40}
+.light{--bg:#f5f0e8;--surface:#ede6d6;--surface2:#e0d8c4;--surface3:#d8cfba;--border:#c8bea8;--border2:#b8ae98;--text:#2a2218;--text-dim:#5a5040;--text-muted:#8a8070;--gold:#8b6914;--gold-light:#6b5010;--gold-dark:#5a4010;--izoh:#2a4a20;--izoh-bg:rgba(74,110,64,0.08);--izoh-border:#4a6e40}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;min-height:100vh;transition:background .3s,color .3s}
+.back-btn{display:none;align-items:center;gap:5px;background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-family:'IBM Plex Mono',monospace;font-size:11px;padding:5px 10px;border-radius:6px;cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent}
+.back-btn:active{border-color:var(--gold-dark);color:var(--gold)}
+.back-btn.visible{display:flex}
+.home-hero{padding:56px 14px 36px;border-bottom:1px solid var(--border)}
+.unvon{position:relative;max-width:560px;margin:0 auto;padding:16px 20px;text-align:center}
+.bismillah-hero{font-family:'Amiri',serif;font-size:42px;color:var(--gold);direction:rtl;line-height:1.6;margin:4px 0 22px;font-weight:400}
+.hr-ornament{display:flex;align-items:center;justify-content:center;gap:10px;margin:6px 0 26px;color:var(--gold)}
+.hr-ornament::before,.hr-ornament::after{content:'';flex:1;max-width:70px;height:1px;background:linear-gradient(90deg,transparent 0%,var(--gold-dark) 50%,transparent 100%)}
+.hr-ornament svg{width:22px;height:12px;color:var(--gold-dark)}
+.home-title{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:26px;color:var(--text);line-height:1.4;margin-bottom:12px;font-style:italic}
+.home-title-main{display:block;font-weight:600;font-size:34px;color:var(--gold);font-style:italic;margin:4px 0}
+.home-sub{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--text-dim);font-style:italic;margin-top:14px}
+.hadis-grid-wrap{padding:24px 12px 80px;max-width:720px;margin:0 auto}
+.main-search-wrap{max-width:720px;margin:0 auto;padding:20px 12px 0;position:relative}
+.main-search-input{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'Roboto',sans-serif;font-size:15px;padding:14px 44px 14px 18px;border-radius:10px;outline:none;transition:border-color .2s}
+.main-search-input:focus{border-color:var(--gold-dark);background:var(--surface2)}
+.main-search-input::placeholder{color:var(--text-muted)}
+.main-search-icon{position:absolute;right:26px;top:calc(50% + 10px);transform:translateY(-50%);color:var(--text-muted);pointer-events:none;font-size:16px;line-height:1}
+.grid-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.grid-title{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:var(--text-muted)}
+.grid-count{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--gold-dark)}
+.hadis-grid{display:grid;grid-template-columns:1fr;gap:10px}
+.hadis-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;cursor:pointer;transition:border-color .2s,background .2s;position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;gap:14px}
+.hadis-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--gold-dark);opacity:0;transition:opacity .2s}
+.hadis-card:active,.hadis-card:hover{border-color:var(--gold-dark);background:var(--surface2)}
+.hadis-card:active::before,.hadis-card:hover::before{opacity:1}
+.hadis-card.hidden{display:none}
+.card-num{font-family:'IBM Plex Mono',monospace;font-size:18px;color:var(--gold);font-weight:600;flex-shrink:0;min-width:38px;text-align:center;line-height:1}
+.card-num-label{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;text-align:center;margin-top:3px;display:block}
+.card-body{flex:1;min-width:0}
+.card-topic{font-size:15px;color:var(--text);font-weight:500;line-height:1.35;margin-bottom:4px}
+.card-narrator{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card-arrow{color:var(--gold-dark);font-size:16px;flex-shrink:0}
+#hadisPage{display:none;max-width:720px;margin:0 auto;padding:28px 14px 100px;opacity:0;transition:opacity 0.3s ease;}
+#hadisPage.visible{display:block;opacity:1;}
+.hadis-nav{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.nav-btn{display:flex;align-items:center;justify-content:center;gap:5px;background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-family:'IBM Plex Mono',monospace;font-size:11px;padding:7px 8px;border-radius:7px;cursor:pointer;flex:1;min-width:0;-webkit-tap-highlight-color:transparent;transition:border-color .2s}
+.nav-btn span{white-space:nowrap}
+.nav-btn:active{border-color:var(--gold-dark);color:var(--gold)}
+.nav-btn.disabled{opacity:.3;pointer-events:none}
+.hadis-pg-ornament{display:flex;align-items:center;gap:12px;margin-bottom:20px;color:var(--text-muted);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase}
+.hadis-pg-ornament::before,.hadis-pg-ornament::after{content:'';flex:1;height:1px;background:var(--border)}
+.hadis-divider{display:flex;align-items:center;justify-content:center;gap:14px;margin:22px 0 18px;color:var(--gold-dark)}
+.hadis-divider::before,.hadis-divider::after{content:'';flex:1;max-width:90px;height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent)}
+.hadis-divider-symbol{font-size:14px;letter-spacing:6px;color:var(--gold-dark)}
+.hadis-pg-header{text-align:center;margin-bottom:28px;padding-bottom:22px;border-bottom:1px solid var(--border);position:relative}
+.hadis-pg-header::after{content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);width:60px;height:2px;background:var(--gold-dark)}
+.hadis-pg-num{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--gold-dark);letter-spacing:.2em;text-transform:uppercase;margin-bottom:10px}
+.hadis-pg-title{font-size:22px;color:var(--gold);font-weight:600;line-height:1.35;margin-bottom:12px;padding:0 8px}
+.hadis-pg-meta{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.meta-pill{display:flex;align-items:center;gap:5px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:3px 11px;font-size:10px;color:var(--text-dim);font-family:'IBM Plex Mono',monospace}
+.meta-pill .dot{width:4px;height:4px;border-radius:50%;background:var(--gold-dark)}
+.hadis-pg-desc{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--gold-dark);border-radius:0 8px 8px 0;padding:13px 16px;margin-bottom:24px;font-size:13px;line-height:1.8;color:var(--text-dim);font-style:italic}
+.hadis-text{display:block;padding:16px 8px;border-radius:6px;margin:0 -8px 16px;line-height:2;color:var(--text);font-size:16px;text-align:justify;hyphens:auto;-webkit-hyphens:auto}
+.hadis-text:active,.hadis-text:hover{background:var(--surface)}
+.hadis-text mark{background:rgba(201,168,76,.25);color:var(--gold-light);border-radius:2px;padding:0 2px}
+.arabic-toggle-wrap{display:flex;justify-content:center;margin:18px 0 8px}
+.arabic-toggle{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-family:'Roboto',sans-serif;font-size:12px;padding:7px 14px;border-radius:20px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .2s;letter-spacing:.02em}
+.arabic-toggle:active,.arabic-toggle:hover{border-color:var(--gold-dark);color:var(--gold)}
+.arabic-toggle.active{border-color:var(--gold-dark);color:var(--gold);background:var(--surface2)}
+.arabic-toggle-ar{font-family:'Amiri',serif;font-size:15px;line-height:1}
+.arabic-toggle-icon{font-size:11px;transition:transform .3s}
+.arabic-toggle.active .arabic-toggle-icon{transform:rotate(180deg)}
+.hadis-arabic{display:none;margin:0 0 18px;padding:20px 18px;background:var(--surface);border:1px solid var(--border);border-right:3px solid var(--gold-dark);border-radius:8px 0 0 8px;direction:rtl;text-align:justify;text-align-last:justify;font-family:'Scheherazade New','Amiri',serif;font-size:22px;line-height:2.2;color:var(--text);font-weight:400}
+.hadis-arabic.visible{display:block;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.hadis-arabic-label{display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:.15em;text-transform:uppercase;direction:ltr;text-align:left;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.hadis-narrator{margin-top:20px;padding:13px 16px;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--gold-dark);border-radius:0 8px 8px 0;font-size:12px;line-height:1.7;color:var(--text-dim)}
+.hadis-source{margin-top:12px;padding:13px 16px;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--gold-dark);border-radius:0 8px 8px 0;font-size:12px;line-height:1.7;color:var(--text-dim)}
+.khatima{margin-top:44px;padding-top:32px;border-top:1px solid var(--border);text-align:center}
+.khatima-stars{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:20px;color:var(--gold-dark);font-size:16px;letter-spacing:6px}
+.khatima-stars::before,.khatima-stars::after{content:'';flex:1;max-width:80px;height:1px;background:var(--border)}
+.khatima-body{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px 18px;font-size:13px;line-height:2;color:var(--text-dim);font-style:italic;position:relative}
+.khatima-body::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:80px;height:2px;background:linear-gradient(90deg,transparent,var(--gold-dark),transparent)}
+.khatima-amin{font-size:19px;font-style:normal;font-weight:600;color:var(--gold);display:block;margin-top:12px;margin-bottom:4px}
+.khatima-author{font-family:'IBM Plex Mono',monospace;font-size:11px;font-style:normal;color:var(--text-muted);letter-spacing:.15em;text-transform:uppercase;display:block;margin-top:5px}
+#searchPage{display:none;max-width:720px;margin:0 auto;padding:24px 14px 100px;opacity:0;transition:opacity 0.3s ease;}
+#searchPage.visible{display:block;opacity:1;}
+.search-pg-header{margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.search-pg-title{font-size:18px;color:var(--text);margin-bottom:4px}
+.search-pg-meta{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted)}
+.result-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:13px 15px;margin-bottom:8px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.result-item:active{border-color:var(--gold-dark);background:var(--surface2)}
+.result-label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--gold-dark);margin-bottom:5px}
+.result-text{font-size:14px;line-height:1.8;color:var(--text-dim)}
+.result-text mark{background:rgba(201,168,76,.25);color:var(--gold-light);border-radius:2px;padding:0 2px}
+.no-results{text-align:center;padding:40px 20px;color:var(--text-muted)}
+.no-results-icon{font-size:48px;margin-bottom:16px;opacity:.5}
+.scroll-top{position:fixed;bottom:20px;right:20px;width:40px;height:40px;background:var(--surface);border:1px solid var(--border);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-dim);opacity:0;pointer-events:none;transition:opacity .3s;z-index:50}
+.scroll-top.visible{opacity:1;pointer-events:auto}
+.scroll-top:active{border-color:var(--gold-dark);color:var(--gold)}
+.theme-toggle{position:fixed;top:16px;right:16px;z-index:1000;background:var(--surface);border:1px solid var(--border);color:var(--gold);width:42px;height:42px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;transition:all 0.3s;box-shadow:0 4px 16px rgba(0,0,0,.4);-webkit-tap-highlight-color:transparent}
+.theme-toggle:hover,.theme-toggle:active{transform:scale(1.08);border-color:var(--gold)}
+.titles-notice{margin:24px 0 0;padding:12px 16px;background:transparent;border:1px solid var(--border);border-radius:8px;font-size:11px;line-height:1.7;color:var(--text-muted);text-align:center;font-style:italic}
+.app-footer{margin-top:32px;padding:18px 16px 8px;text-align:center;border-top:1px solid var(--border)}
+.app-footer-line{display:flex;align-items:center;justify-content:center;gap:10px;color:var(--gold-dark);margin-bottom:10px}
+.app-footer-line::before,.app-footer-line::after{content:'';flex:1;max-width:40px;height:1px;background:var(--border)}
+.app-footer-dot{width:4px;height:4px;border-radius:50%;background:var(--gold-dark)}
+.app-footer-text{font-family:'Roboto',sans-serif;font-size:13px;color:var(--text-dim);line-height:1.6}
+.app-footer-name{color:var(--gold);font-weight:500}
+.app-footer-sub{font-family:'Roboto',sans-serif;font-size:10px;color:var(--text-muted);letter-spacing:.12em;margin-top:4px;font-style:normal}
+.muq-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;cursor:pointer;transition:border-color .2s,background .2s;position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.muq-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--gold-dark);opacity:0;transition:opacity .2s}
+.muq-card:active,.muq-card:hover{border-color:var(--gold-dark);background:var(--surface2)}
+.muq-card:active::before,.muq-card:hover::before{opacity:1}
+.muq-card-icon{font-size:22px;flex-shrink:0;min-width:38px;text-align:center;line-height:1}
+.muq-card-body{flex:1;min-width:0}
+.muq-card-title{font-size:15px;color:var(--text);font-weight:500;line-height:1.35;margin-bottom:4px}
+.muq-card-sub{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:.08em}
+.muq-card-arrow{color:var(--gold-dark);font-size:16px;flex-shrink:0}
+#muqaddimaPage{display:none;max-width:720px;margin:0 auto;padding:28px 14px 100px;opacity:0;transition:opacity 0.3s ease}
+#muqaddimaPage.visible{display:block;opacity:1}
+.muq-header{text-align:center;margin-bottom:28px;padding-bottom:22px;border-bottom:1px solid var(--border);position:relative}
+.muq-header::after{content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);width:60px;height:2px;background:var(--gold-dark)}
+.muq-label{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--gold-dark);letter-spacing:.2em;text-transform:uppercase;margin-bottom:12px}
+.muq-title{font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--gold);font-weight:600;font-style:italic;line-height:1.35;margin-bottom:10px}
+.muq-subtitle{font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--text-dim);font-style:italic}
+.muq-bismillah{font-family:'Amiri',serif;font-size:32px;color:var(--gold);direction:rtl;text-align:center;line-height:1.6;margin:10px 0 24px;font-weight:400}
+.muq-body{font-size:15px;line-height:2;color:var(--text);text-align:justify;padding:0 4px}
+.muq-body p{margin-bottom:18px}
+.muq-highlight{color:var(--gold-light);font-style:italic}
+.muq-quote{display:block;margin:14px 20px;padding:12px 18px;background:var(--surface);border-left:3px solid var(--gold-dark);border-radius:0 8px 8px 0;font-style:italic;color:var(--text-dim);font-size:14px;line-height:1.9;text-indent:0}
+.muq-divider{display:flex;align-items:center;justify-content:center;gap:14px;margin:28px 0;color:var(--gold-dark)}
+.muq-divider::before,.muq-divider::after{content:'';flex:1;max-width:90px;height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent)}
+.muq-divider span{font-size:14px;letter-spacing:6px;color:var(--gold-dark)}
+.muq-footer{margin-top:36px;padding-top:24px;border-top:1px solid var(--border);text-align:center;font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--text-dim);font-size:14px;line-height:1.8}
+.muq-footer-amin{display:block;font-size:18px;color:var(--gold);font-weight:600;margin-top:10px;font-style:normal}
+.muq-nav{display:flex;align-items:center;justify-content:center;margin-bottom:20px}
+.muq-nav .nav-btn{flex:0 1 auto;min-width:140px}
+</style>
+</head>
+<body>
+<button class="theme-toggle" onclick="App.toggleTheme()" title="Қоронғу/Ёруғ режим" aria-label="Мавзуни алмаштириш">🌓</button>
+
+<div id="homePage">
+<div class="home-hero">
+<div class="unvon">
+<h1 class="home-title">
+<span>Имом Нававийнинг</span>
+<span class="home-title-main">«Қирқ ҳадис»</span>
+<span>тўплами</span>
+</h1>
+<p class="home-sub">Ислом динининг асосий таълимотлари</p>
+</div>
+</div>
+<div class="main-search-wrap">
+<input type="text" class="main-search-input" id="searchInput" placeholder="Ҳадислардан қидириш..." aria-label="Ҳадислар бўйича қидириш">
+<div class="main-search-icon">🔍</div>
+</div>
+<div class="hadis-grid-wrap">
+<div class="grid-header">
+<span class="grid-title">Барча ҳадислар</span>
+<span class="grid-count" id="gridCount"></span>
+</div>
+<div class="hadis-grid" id="hadisGrid"></div>
+<div class="titles-notice">
+Эслатма: Ҳадислар учун келтирилган сарлавҳаларни Имом Нававий раҳимаҳуллоҳ қўймаганлар. Улар ҳадис мазмунини тушунишга ёрдам бериш учун кейинчалик таржимон ёки шорҳловчилар томонидан қўйилган.
+</div>
+<div class="app-footer">
+<div class="app-footer-line"><span class="app-footer-dot"></span></div>
+<div class="app-footer-text">Таёрлади: <span class="app-footer-name">Исмоил Дилмурод ўғли</span></div>
+</div>
+</div>
+</div>
+
+<div id="hadisPage">
+<div class="hadis-nav">
+<button class="nav-btn" id="prevBtn" onclick="App.open(curN-1)" aria-label="Олдинги ҳадис">
+<span>← Олдинги</span>
+</button>
+<button class="nav-btn nav-btn-home" onclick="App.goHome()" aria-label="Бош саҳифага қайтиш">
+<span>Бош саҳифа</span>
+</button>
+<button class="nav-btn" id="nextBtn" onclick="App.open(curN+1)" aria-label="Кейинги ҳадис">
+<span>Кейинги →</span>
+</button>
+</div>
+<div class="hadis-divider"><span class="hadis-divider-symbol">✦ ✦ ✦</span></div>
+<div class="hadis-pg-header">
+<div class="hadis-pg-num" id="hadisNum"></div>
+<h2 class="hadis-pg-title" id="hadisTitle"></h2>
+</div>
+<div class="arabic-toggle-wrap" id="arabicToggleWrap">
+<button class="arabic-toggle" id="arabicToggleBtn" onclick="App.toggleArabic()" aria-label="Арабча матнни кўрсатиш/яшириш">
+<span class="arabic-toggle-ar">عربي</span>
+<span id="arabicToggleText">Арабча матн</span>
+<span class="arabic-toggle-icon">▼</span>
+</button>
+</div>
+<div class="hadis-arabic" id="hadisArabic">
+<span class="hadis-arabic-label">Арабча матн</span>
+<div id="hadisArabicText"></div>
+</div>
+<div class="hadis-text" id="hadisText"></div>
+<div class="hadis-narrator" id="hadisNarrator"></div>
+<div class="hadis-source" id="hadisSource"></div>
+</div>
+
+<div id="muqaddimaPage">
+<div class="muq-nav">
+<button class="nav-btn nav-btn-home" onclick="App.goHome()" aria-label="Бош саҳифага қайтиш">
+<span>← Бош саҳифа</span>
+</button>
+</div>
+<div class="muq-header">
+<h2 class="muq-title">Имом Нававийнинг муқаддимаси</h2>
+</div>
+<div class="muq-body">
+<p>Барча мақтов оламлар Парвардигори Аллоҳга хосдир. У осмонлар ва ерларни тутиб турувчи ва жамики халойиқни бошқарувчи, мукаллафларни ҳидоят этмоқ ва дин йўл-йўриқларини баён этмоқ учун қатъий далиллар ва очиқ ҳужжатлар билан элчилар юборувчи Зотдир. У Зотга барча неъматлари учун ҳамд айтаман ва Ундан фазли-карамини янада зиёда этишини сўрайман.</p>
+
+<p>Гувоҳлик бераманки, сарваримиз Муҳаммад алайҳиссалом Унинг бандаси ва элчисидирлар. Махлуқлар афзали бўлган бу киши Унинг ҳабиби ва халилидирлар. У зот йиллар кетидан йиллар ўтса ҳам давомли мўъжиза бўлиб қолувчи азиз Қуръон ва тўғри йўл изловчилар йўлини ёритувчи суннатлар билан мукаррам этилмиш, <span class="muq-highlight">«жавомеул калим»</span> ва бағри кенг дин билан хосланмишдир. У кишига ҳамда бошқа пайғамбар ва элчиларга, ҳаммаларининг аҳли-оилаларига ва жамики солиҳ кишиларга Аллоҳнинг дуруд ва саломлари бўлсин.</p>
+
+
+<p>Али ибн Абу Толиб, Абдуллоҳ ибн Масъуд, Муоз ибн Жабал, Абу Дардо, Ибн Умар, Ибн Аббос, Анас ибн Молик, Абу Ҳурайра ва Абу Саид Худрий разияллоҳу анҳумдан кўп йўллар ва турли хил ривоятлар билан бизга етиб келишича, Расулуллоҳ соллаллоҳу алайҳи ва саллам бундай деганлар:</p>
+
+<div class="muq-quote">«Кимки менинг умматим учун унинг дин ишидан бўлган қирқта ҳадисимни сақлаб берса, Қиёмат куни Аллоҳ уни фақиҳ ва олимлар гуруҳида тирилтиради».</div>
+
+<p>Бир ривоятда <span class="muq-highlight">«Аллоҳ уни фақиҳ, олим қилиб тирилтиради»</span> дейилган. Абу Дардо ривоятларида <span class="muq-highlight">«Мен Қиёмат куни унинг учун шафоатчи ва гувоҳ бўламан»</span>, Ибн Масъуд ривоятларида <span class="muq-highlight">«Унга: жаннатнинг хоҳлаган эшигидан кир, дейилади»</span>, Ибн Умар ривоятларида эса <span class="muq-highlight">«У олимлар гуруҳига ёзилади ва шаҳидлар ичида тирилтирилади»</span>, дейилган.</p>
+
+<p>Мазкур ҳадиснинг йўллари кўп бўлса-да ҳофизлар унинг заиф ҳадис эканлигига иттифоқ қилишган. Олимлар – Аллоҳ улардан рози бўлсин – шу бобда сон-саноқсиз китоблар ёзишган.</p>
+
+<p>Шундай китобни тасниф этган мен билган энг биринчи киши Абдуллоҳ ибн Муборакдир. Сўнгра раббоний олим Муҳаммад ибн Аслам ат-Тусий, сўнгра Ҳасан ибн Суфён ан-Насоий, Абу Бакр ал-Ожуррий, Абу Бакр ибн Иброҳим ал-Асфаҳоний, Дориқутний, Ҳоким, Абу Нуайм, Абу Абдурраҳмон Суламий, Абу Саид Молийний, Абу Усмон Собуний, Абдуллоҳ ибн Муҳаммад Ансорий, Абу Бакр Байҳақий ва олдингию кейинги халойиқлардан сонсиз кишилар шундай ишга киришганлар.</p>
+
+
+<p>Мен ана шу улуғ намояндалар ва Ислом ҳофизларига иқтидо юзасидан қирқ ҳадисни жамлаш тўғрисида Аллоҳдан истихора қилдим. Олимлар фазилатли амалларда заиф ҳадисга амал қилишнинг жоизлигига иттифоқ қилганлар. Шунга қарамай мен бу ҳадисга эмас, балки Расулуллоҳ соллаллоҳу алайҳи ва салламнинг саҳиҳ ҳадислардаги сўзларига таянаман:</p>
+
+<div class="muq-quote">«Ҳозир бўлганингиз ғойиб бўлганингизга етказинг» ва «Менинг сўзимни эшитиб, уни сақлаган ва эшитганидек етказган кишининг юзини Аллоҳ нурли қилсин».</div>
+
+<p>Олимлардан баъзилари қирқ ҳадисни дин асллари борасида, баъзилари фуруъда, баъзилари жиҳод борасида, баъзилари зоҳидлик, баъзилари одоб ва яна баъзи бировлари хутбалар борасида тўпладилар. Буларнинг бари дуруст мақсадлардир, Аллоҳ шу мақсад эгаларидан рози бўлсин.</p>
+
+<p>Мен буларнинг барчасидан ҳам муҳимроқ бўлган қирқ ҳадисни жамлашни маъқул кўрдим. Бу эса мана шуларнинг ҳаммасини қамраган қирқ ҳадисдир. Уларнинг ҳар бири диннинг буюк қоидаларидан бўлиб, олимлар уни диннинг таянчи, ё Исломнинг ярми ё учдан бири ёки шу каби сўзлар билан сифатлаган бўладилар.</p>
+
+<p>Ҳамда мен бу «Қирқ ҳадис»нинг саҳиҳ бўлиши ва унинг катта қисми Бухорий ва Муслимнинг «Саҳиҳ»ларида мавжуд бўлишига риоя этаман, уларни ёдлаш қулай бўлиши ва оммага фойдаси тегиши учун санадларини тушириб юборилган ҳолда зикр қиламан, иншоаллоҳ. Сўнгра тушунарсиз лафзларни аниқлашга бағишланган бобни келтираман.</p>
+
+<p>Бу ҳадислар муҳим вазифаларни ўз ичига олгани ва жамики тоатларга эътиборни тортгани туфайли Охиратга рағбат қилган ҳар бир киши уларни билиши керакдир. Улар устида тафаккур қилган киши учун мазкур хусусият равшандир.</p>
+
+
+<p style="text-align:center;font-style:italic;color:var(--gold-light);text-indent:0;">Таянчим фақат Аллоҳдир, у Зотгагина ишимни ҳавола этаман ва суянаман. Ҳамд ва неъмат фақат Уникидир, тавфиқ ва хатодан поклик фақат Ундандир.</p>
+</div>
+</div>
+
+<div id="searchPage">
+<div class="search-pg-header">
+<h2 class="search-pg-title">Қидириш натижалари</h2>
+<p class="search-pg-meta" id="searchMeta"></p>
+</div>
+<div id="searchResults"></div>
+</div>
+
+<div class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Юқорига чиқиш">↑</div>
+
+<script>
+const QD=[
+{
+  "id": 1,
+  "title": "Амаллар ниятларга қараб эътибор қилинади",
+  "narrator": "Амирул мўминин Абу Ҳафс Умар ибн Хаттоб розияллоҳу анҳу",
+  "text": "«Амаллар (фақатгина) ниятлар билан (эътибор қилинади) ва ҳар бир киши учун ният қилган нарсасигина (савоби ёки жазоси) бордир. Бас, кимнинг ҳижрати Аллоҳ ва Расули учун бўлса, унинг ҳижрати Аллоҳ ва Расули учун (деб эътибор қилинажак). Кимнинг ҳижрати бирон дунё (матоси) ни қўлга киритиш ёки бир аёлни никоҳлаб олиш учун бўлса, унинг ҳижрати нима учун қилинган бўлса, ўша учундир».",
+  "source": "Бухорий ва Муслим ривояти.",
+  "arabic": "عَنْ أَمِيرِ المُؤمِنينَ أَبي حَفْصٍ عُمَرَ بْنِ الخَطَّابِ قَالَ: سَمِعْتُ رَسُولَ اللهِ ﷺ يَقُولُ: «إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ، وَإنَّمَا لِكُلِّ امْرِىءٍ مَا نَوَى، فَمَنْ كَانَتْ هِجْرَتُهُ إِلى اللهِ وَرَسُولِهِ فَهِجْرَتُهُ إلى اللهِ وَرَسُولِهِ، وَمَنْ كَانَتْ هِجْرَتُهُ لِدُنْيَا يُصِيبُهَا، أَوِ امْرَأَةٍ يَنْكِحُهَا، فَهِجْرَتُهُ إِلى مَا هَاجَرَ إلَيْهِ». رواه إماما المحدثين أبو عبدالله محمد بن إسماعيل بن إبراهيم بن المغيرة بن بَرْدِزْبَهْ البخاري، وأبو الحسين مسلم بن الحجَّاج بن مسلم القشيري النيسابوري، في صحيحيهما اللذين هما أصح الكتب المصنفة."
+},
+{
+  "id": 2,
+  "title": "Ислом, иймон ва эҳсон",
+  "narrator": "Умар ибн Хаттоб розияллоҳу анҳу",
+  "text": "Бир куни Расулуллоҳ соллаллоҳу алайҳи васалламнинг ҳузурларида ўтирган эдик, тўсатдан олдимизда кийимлари оппоқ, сочлари тим қора, устида сафар асари кўринмайдиган ва бирортамиз танимайдиган бир киши пайдо бўлди. У Пайғамбаримиз соллаллоҳу алайҳи васалламнинг олдиларига келиб ўтирди ва тиззаларини у зотнинг тиззаларига тираб, икки кафтини сонлари устига қўйиб деди: «Эй Муҳаммад, менга Ислом ҳақида хабар беринг». Расулуллоҳ соллаллоҳу алайҳи васаллам дедилар: «Ислом — Аллоҳдан ўзга илоҳ йўқлигига ва Муҳаммад Аллоҳнинг элчиси эканига гувоҳлик беришинг, намозни тўкис адо этишинг, закот беришинг, Рамазон рўзасини тутишинг ва агар йўлга қодир бўлсанг, Байтуллоҳни ҳаж қилишингдир». У киши: «Тўғри айтдингиз», деди. Биз унинг ҳам сўраб, ҳам тасдиқлаётганидан ажабландик. Сўнг у яна сўради: «Менга Иймон ҳақида хабар беринг». Пайғамбаримиз соллаллоҳу алайҳи васаллам дедилар: «Иймон — Аллоҳга, Унинг фаришталарига, китобларига, пайғамбарларига, охират кунига ва тақдирнинг яхшиси ҳам, ёмони ҳам Аллоҳдан эканига ишонишингдир». У киши яна: «Тўғри айтдингиз», деди ва яна сўради: «Менга Эҳсон ҳақида хабар беринг». Пайғамбаримиз соллаллоҳу алайҳи васаллам дедилар: «Эҳсон — Аллоҳга Уни кўриб турганингдек ибодат қилишингдир. Агар сен Уни кўрмаётган бўлсанг, албатта У сени кўриб турибди». Сўнг у киши: «Менга Қиёмат ҳақида хабар беринг», деди. Пайғамбаримиз соллаллоҳу алайҳи васаллам: «Бу ҳақда сўралаётган киши сўровчидан билимлироқ эмас», дедилар. У киши: «Унда унинг аломатларидан хабар беринг», деди. Пайғамбаримиз соллаллоҳу алайҳи васаллам дедилар: «Чўри ўз хожасини туғиши ва ялангоёқ, яланғоч, камбағал чўпонларнинг бино қуришда кимўзарга мусобақалашишларини кўришингдир». Шундан сўнг у киши кетди. Мен бир муддат кутиб қолдим. Сўнг Расулуллоҳ соллаллоҳу алайҳи васаллам мендан: «Эй Умар, сўровчи кимлигини билдингми?» деб сўрадилар. Мен: «Аллоҳ ва Унинг Расули билувчироқ», дедим. Шунда Расулуллоҳ соллаллоҳу алайҳи васаллам: «Албатта, бу Жаброил эди, сизларга динингизни ўргатиш учун келибди».",
+  "source": "Бухорий ва Муслим ривояти.",
+  "arabic": "عَنْ عُمَرَ رَضِيَ اللهُ تَعَالَى عَنْهُ أَيْضًا قَالَ: بَيْنَمَا نَحْنُ جُلُوسٌ عِنْدَ رَسُولِ اللهِ ﷺ ذَاتَ يَوْمٍ إِذْ طَلَعَ عَلَيْنَا رَجُلٌ شَدِيدُ بَيَاضِ الثِّيَابِ شَدِيدُ سَوَادِ الشَّعْرِ، لَا يُرَى عَلَيْهِ أَثَرُ السَّفَرِ، وَلَا يَعْرِفُهُ مِنَّا أَحَدٌ، حَتَّى جَلَسَ إِلَى النَّبِيِّ ﷺ فَأَسْنَدَ رُكْبَتَيْهِ إِلَى رُكْبَتَيْهِ، وَوَضَعَ كَفَّيْهِ عَلَى فَخِذَيْهِ، وَقَالَ: يَا مُحَمَّدُ أَخْبِرْنِي عَنِ الإِسْلَامِ. فَقَالَ رَسُولُ اللهِ ﷺ: «الإِسْلَامُ أَنْ تَشْهَدَ أَنْ لَا إِلَهَ إِلَّا اللهُ وَأَنَّ مُحَمَّدًا رَسُولُ اللهِ، وَتُقِيمَ الصَّلَاةَ، وَتُؤْتِيَ الزَّكَاةَ، وَتَصُومَ رَمَضَانَ، وَتَحُجَّ البَيْتَ إِنِ اسْتَطَعْتَ إِلَيْهِ سَبِيلًا». قَالَ: صَدَقْتَ. فَعَجِبْنَا لَهُ يَسْأَلُهُ وَيُصَدِّقُهُ. قَالَ: فَأَخْبِرْنِي عَنِ الإِيمَانِ. قَالَ: «أَنْ تُؤْمِنَ بِاللهِ، وَمَلَائِكَتِهِ، وَكُتُبِهِ، وَرُسُلِهِ، وَاليَوْمِ الآخِرِ، وَتُؤْمِنَ بِالقَدَرِ خَيْرِهِ وَشَرِّهِ». قَالَ: صَدَقْتَ. قَالَ: فَأَخْبِرْنِي عَنِ الإِحْسَانِ. قَالَ: «أَنْ تَعْبُدَ اللهَ كَأَنَّكَ تَرَاهُ، فَإِنْ لَمْ تَكُنْ تَرَاهُ فَإِنَّهُ يَرَاكَ». قَالَ: فَأَخْبِرْنِي عَنِ السَّاعَةِ. قَالَ: «مَا المَسْؤُولُ عَنْهَا بِأَعْلَمَ مِنَ السَّائِلِ». قَالَ: فَأَخْبِرْنِي عَنْ أَمَارَاتِهَا. قَالَ: «أَنْ تَلِدَ الأَمَةُ رَبَّتَهَا، وَأَنْ تَرَى الحُفَاةَ العُرَاةَ العَالَةَ رِعَاءَ الشَّاءِ يَتَطَاوَلُونَ فِي البُنْيَانِ». ثُمَّ انْطَلَقَ، فَلَبِثْتُ مَلِيًّا، ثُمَّ قَالَ: «يَا عُمَرُ أَتَدْرِي مَنِ السَّائِلُ؟». قُلْتُ: اللهُ وَرَسُولُهُ أَعْلَمُ. قَالَ: «فَإِنَّهُ جِبْرِيلُ أَتَاكُمْ يُعَلِّمُكُمْ دِينَكُمْ». رواه مسلم."
+},
+{
+  "id": 3,
+  "title": "Ислом рукнлари ва буюк асослари",
+  "narrator": "Абу Абдураҳмон Абдуллоҳ ибн Умар ибн Хаттоб розияллоҳу анҳумо",
+  "text": "Мен Расулуллоҳ соллаллоҳу алайҳи васалламнинг шундай деганларини эшитдим: «Ислом бешта (асос) устига бино қилинган: Аллоҳдан ўзга илоҳ йўқ ва Муҳаммад Аллоҳнинг Расулидир, деб гувоҳлик бериш, намозни тўкис адо этиш, закот бериш, Байтуллоҳни ҳаж қилиш ва Рамазон рўзасини тутиш».",
+  "source": "Бухорий ва Муслим ривояти.",
+  "arabic": "عَنْ أَبِي عَبْدِ الرَّحْمَنِ عَبْدِ اللهِ بْنِ عُمَرَ بْنِ الخَطَّابِ رَضِيَ اللهُ عَنْهُمَا قَالَ: سَمِعْتُ النَّبِيَّ ﷺ يَقُولُ: «بُنِيَ الإِسْلَامُ عَلَى خَمْسٍ: شَهَادَةِ أَنْ لَا إِلَهَ إِلَّا اللهُ وَأَنَّ مُحَمَّدًا رَسُولُ اللهِ، وَإِقَامِ الصَّلَاةِ، وَإِيتَاءِ الزَّكَاةِ، وَحَجِّ البَيْتِ، وَصَوْمِ رَمَضَانَ». رواه البخاري ومسلم."
+},
+{
+  "id": 4,
+  "title": "Инсоннинг яралиш босқичлари ва унинг хотимаси",
+  "narrator": "Абу Абдураҳмон Абдуллоҳ ибн Масъуд розияллоҳу анҳу",
+  "text": "«Бизга содиқ ва масдуқ (яъни, ўзи ростгўй ва Аллоҳ томонидан тасдиқланган) зот — Расулуллоҳ соллаллоҳу алайҳи васаллам сўзлаб бердилар: «Албатта, ҳар бирингизнинг яратилишингиз онангиз қорнида қирқ кун давомида нутфа (томчи) ҳолида жамланади. Сўнгра худди шунча вақт ичида алақа (лахта қон) бўлади. Сўнгра худди шунча вақт ичида музға (бир тишлам гўшт) бўлади. Кейин унга фаришта юборилади ва унга руҳ пуфланади. Сўнг у (фаришта) тўртта сўзни ёзишга буюрилади: ризқини, ажалини (умрини), амалини ҳамда бахтсиз ёки бахтли бўлишини. Ундан ўзга илоҳ бўлмаган Зот билан қасам ичаманки, сизлардан бирингиз жаннат аҳлининг амалини қилади-да, ҳатто у билан жаннат орасида бир газ масофа қолганида, ундан тақдир ёзуви ўзиб кетади ва у дўзах аҳлининг амалини қилиб, дўзахга киради. Ва яна сизлардан бирингиз дўзах аҳлининг амалини қилади-да, ҳатто у билан дўзах орасида бир газ масофа қолганида, ундан тақдир ёзуви ўзиб кетади ва у жаннат аҳлининг амалини қилиб, жаннатга киради».",
+  "source": "Бухорий ва Муслим ривояти.",
+  "arabic": "عَنْ عَبْدِ اللهِ بْنِ مَسْعُودٍ رَضِيَ اللهُ عَنْهُ قَالَ: حَدَّثَنَا رَسُولُ اللهِ ﷺ وَهُوَ الصَّادِقُ المَصْدُوقُ: «إِنَّ أَحَدَكُمْ يُجْمَعُ خَلْقُهُ فِي بَطْنِ أُمِّهِ أَرْبَعِينَ يَوْمًا نُطْفَةً، ثُمَّ يَكُونُ عَلَقَةً مِثْلَ ذَلِكَ، ثُمَّ يَكُونُ مُضْغَةً مِثْلَ ذَلِكَ، ثُمَّ يُرْسَلُ إِلَيْهِ المَلَكُ فَيَنْفُخُ فِيهِ الرُّوحَ، وَيُؤْمَرُ بِأَرْبَعِ كَلِمَاتٍ: بِكَتْبِ رِزْقِهِ وَأَجَلِهِ وَعَمَلِهِ وَشَقِيٌّ أَوْ سَعِيدٌ. فَوَاللهِ الَّذِي لَا إِلَهَ غَيْرُهُ، إِنَّ أَحَدَكُمْ لَيَعْمَلُ بِعَمَلِ أَهْلِ الجَنَّةِ حَتَّى مَا يَكُونُ بَيْنَهُ وَبَيْنَهَا إِلَّا ذِرَاعٌ فَيَسْبِقُ عَلَيْهِ الكِتَابُ فَيَعْمَلُ بِعَمَلِ أَهْلِ النَّارِ فَيَدْخُلُهَا، وَإِنَّ أَحَدَكُمْ لَيَعْمَلُ بِعَمَلِ أَهْلِ النَّارِ حَتَّى مَا يَكُونُ بَيْنَهُ وَبَيْنَهَا إِلَّا ذِرَاعٌ فَيَسْبِقُ عَلَيْهِ الكِتَابُ فَيَعْمَلُ بِعَمَلِ أَهْلِ الجَنَّةِ فَيَدْخُلُهَا». رواه البخاري ومسلم."
+},
+{
+  "id": 5,
+  "title": "Ёмонлик ва бидъатларни рад этиш",
+  "narrator": "Мўминлар онаси Умму Абдуллоҳ Оиша розияллоҳу анҳо",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васаллам дедилар: «Ким бизнинг бу ишимизда (яъни динимизда) ундан бўлмаган нарсани янгидан пайдо қилса, у рад қилинувчидир». Имом Муслимнинг ривоятида эса: «Ким бизнинг буйруғимиз бўлмаган бир амални қилса, у рад қилинувчидир».",
+  "source": "Муслим ривояти.",
+  "arabic": "عَنْ أُمِّ المُؤْمِنِينَ أُمِّ عَبْدِ اللهِ عَائِشَةَ رَضِيَ اللهُ عَنْهَا قَالَتْ: قَالَ رَسُولُ اللهِ ﷺ: «مَنْ أَحْدَثَ فِي أَمْرِنَا هَذَا مَا لَيْسَ مِنْهُ فَهُوَ رَدٌّ». رواه البخاري ومسلم. وفي رواية لمسلم: «مَنْ عَمِلَ عَمَلًا لَيْسَ عَلَيْهِ أَمْرُنَا فَهُوَ رَدٌّ»."
+},
+{
+  "id": 6,
+  "title": "Ҳалол ва ҳаром",
+  "narrator": "Абу Абдуллоҳ Нуъмон ибн Башир розияллоҳу анҳу",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васаллам дедилар: «Дарҳақиқат, ҳалол (бўлган нарсалар) аниқдир, ҳаром (бўлган нарсалар) ҳам аниқдир. Иккисининг ўртасида шубҳали бўлган (яъни на ҳалоллиги ва на ҳаромлиги аниқ бўлмаган) нарсалар ҳам борки, кўпчилик уларни билмайди. Бас, кимки шундай шубҳали нарсалардан ўзини эҳтиёт қилиб юрса, динини ҳам, номус-обрўсини ҳам пок асраб қолади. Бамисоли (доим) бировнинг қўриқланадиган ери атрофида сурувни ўтлатиб юрган чўпон қўйларининг бехосдан ўша ерга ҳам кириб кетишидан омонда бўлмагани сингари, шубҳали нарсалардан ўзини эҳтиёт қилмаган киши кейинчалик ҳаромга ҳам аралашиб қолади. Огоҳ бўлинг, ҳар бир подшоҳнинг (ўзгалар киришини ман қиладиган) қўриқланадиган ери бўлади. Огоҳ бўлинг, Аллоҳнинг қўриқланадиган ери Унинг ҳаром қилган нарсаларидир. Огоҳ бўлинг, танада бир парча гўшт борки, агар у соғлом бўлса, бутун тана соғлом бўлади. Агар у бузилса, тана ҳам бузилади. Огоҳ бўлинг, у (парча гўшт) — қалбдир».",
+  "source": "Бухорий ва Муслим ривояти.",
+  "arabic": "عَنْ أَبِي عَبْدِ اللهِ النُّعْمَانِ بْنِ بَشِيرٍ رَضِيَ اللهُ عَنْهُمَا قَالَ: سَمِعْتُ رَسُولَ اللهِ ﷺ يَقُولُ: «إِنَّ الحَلَالَ بَيِّنٌ وَإِنَّ الحَرَامَ بَيِّنٌ، وَبَيْنَهُمَا أُمُورٌ مُشْتَبِهَاتٌ لَا يَعْلَمُهُنَّ كَثِيرٌ مِنَ النَّاسِ، فَمَنِ اتَّقَى الشُّبُهَاتِ فَقَدِ اسْتَبْرَأَ لِدِينِهِ وَعِرْضِهِ، وَمَنْ وَقَعَ فِي الشُّبُهَاتِ وَقَعَ فِي الحَرَامِ، كَالرَّاعِي يَرْعَى حَوْلَ الحِمَى يُوشِكُ أَنْ يَقَعَ فِيهِ. أَلَا وَإِنَّ لِكُلِّ مَلِكٍ حِمًى، أَلَا وَإِنَّ حِمَى اللهِ مَحَارِمُهُ، أَلَا وَإِنَّ فِي الجَسَدِ مُضْغَةً إِذَا صَلَحَتْ صَلَحَ الجَسَدُ كُلُّهُ، وَإِذَا فَسَدَتْ فَسَدَ الجَسَدُ كُلُّهُ، أَلَا وَهِيَ القَلْبُ». رواه البخاري ومسلم."
+},
+{
+  "id": 7,
+  "title": "Дин насиҳатдир",
+  "narrator": "Тамим ибн Авс ад-Дорий розияллоҳу анҳу",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васаллам дедилар:\n— Дин — бу насиҳатдир.\n— Ким учун? — деб сўрадик биз.\n— Аллоҳ учун, Унинг китоби ва Расули учун, мусулмонларнинг раҳбарлари ва ҳаммалари учундир, — деб жавоб бердилар Набий соллаллоҳу алайҳи васаллам.",
+  "source": "Муслим ривояти.",
+  "arabic": "عَنْ أَبِي رُقَيَّةَ تَمِيمِ بْنِ أَوْسٍ الدَّارِيِّ رَضِيَ اللهُ عَنْهُ أَنَّ النَّبِيَّ ﷺ قَالَ: «الدِّينُ النَّصِيحَةُ». قُلْنَا: لِمَنْ يَا رَسُولَ اللهِ؟ قَالَ: «لِلَّهِ، وَلِكِتَابِهِ، وَلِرَسُولِهِ، وَلِأَئِمَّةِ المُسْلِمِينَ، وَعَامَّتِهِمْ». رواه مسلم."
+},
+{
+  "id": 8,
+  "title": "Мусулмоннинг ҳурмати",
+  "narrator": "Ибн Умар розияллоҳу анҳумо",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васаллам дедилар: «(Динсиз, мушрик) кимсалар «Аллоҳдан ўзга илоҳ йўқ ва Муҳаммад Унинг Расулидир» деб гувоҳлик бериб, намозни (давомий суратда тўкис) адо этмагунларигача ва закотни (ҳақдор кишиларига) бермагунларигача, улар билан уришишга буюрилдим. Агар одамлар юқоридагиларга (тўлиқ) амал қилсалар, мендан қонлари ва молларини омон сақлайдилар. Фақат Ислом ҳаққи бундан мустасно. (Сўнг) уларнинг ҳисоби Аллоҳга ҳавола».",
+  "source": "Бухорий ва Муслим ривояти.",
+  "arabic": "عَنِ ابْنِ عُمَرَ رَضِيَ اللهُ عَنْهُمَا أَنَّ رَسُولَ اللهِ ﷺ قَالَ: «أُمِرْتُ أَنْ أُقَاتِلَ النَّاسَ حَتَّى يَشْهَدُوا أَنْ لَا إِلَهَ إِلَّا اللهُ وَأَنَّ مُحَمَّدًا رَسُولُ اللهِ، وَيُقِيمُوا الصَّلَاةَ، وَيُؤْتُوا الزَّكَاةَ، فَإِذَا فَعَلُوا ذَلِكَ عَصَمُوا مِنِّي دِمَاءَهُمْ وَأَمْوَالَهُمْ إِلَّا بِحَقِّ الإِسْلَامِ، وَحِسَابُهُمْ عَلَى اللهِ تَعَالَى». رواه البخاري ومسلم."
+},
+{
+  "id": 9,
+  "title": "Енгиллаштирингиз, оғирлаштирмангиз! Итоат ва ҳалимлик нажотга бошлайди",
+  "narrator": "Абу Ҳурайра Абдураҳмон ибн Сахр розияллоҳу анҳу",
+  "text": "Мен Расулуллоҳ соллаллоҳу алайҳи васалламнинг шундай деганларини эшитдим: «Сизларни нимадан қайтарган бўлсам, уни тарк этинглар. Нимага буюрган бўлсам, имкон қадар ўша нарсани бажаринглар. Сизлардан аввал ўтган қавмларни ҳалок қилган нарса уларнинг ўз Пайғамбарларига кўпдан-кўп савол беришлари ва кўрсатмаларига хилоф иш қилишлари бўлган».",
+  "source": "Бухорий ва Муслим ривояти.",
+  "arabic": "عَنْ أَبِي هُرَيْرَةَ عَبْدِ الرَّحْمَنِ بْنِ صَخْرٍ رَضِيَ اللهُ تَعَالَى عَنْهُ قَالَ: سَمِعْتُ رَسُولَ اللهِ ﷺ يَقُولُ: «مَا نَهَيْتُكُمْ عَنْهُ فَاجْتَنِبُوهُ، وَمَا أَمَرْتُكُمْ بِهِ فَأْتُوا مِنْهُ مَا اسْتَطَعْتُمْ، فَإِنَّمَا أَهْلَكَ الَّذِينَ مِنْ قَبْلِكُمْ كَثْرَةُ مَسَائِلِهِمْ وَاخْتِلَافُهُمْ عَلَى أَنْبِيَائِهِمْ». رواه البخاري ومسلم."
+},
+{
+  "id": 10,
+  "title": "Ҳалол-покиза юрган кишининг амали мақбулдир!",
+  "narrator": "Абу Ҳурайра розияллоҳу анҳу",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васаллам дедилар:\n— Аллоҳ Покдир ва фақат пок нарсанигина қабул қилади. Албатта Аллоҳ Пайғамбарларга буюрган нарсани мўминларга ҳам амр этди: «Эй Пайғамбар, ҳалол-пок таомлардан енглар ва яхши амаллар қилинглар». «Эй мўминлар, сизларга ризқ қилиб берганимиз покиза нарсалардан енглар». Сўнг Расулуллоҳ соллаллоҳу алайҳи васаллам узоқ сафарларга чиққан, сочлари (тароқ тегмаганидан) патила-патила бўлиб кетган, (узоқ сафарда юргани сабабли) чанг-тўзон сочининг рангини ўзгартириб юборган бир киши ҳақида гапирдилар. Ҳалиги одам қўлларини кўкка чўзиб: «Парвардигоро! Парвардигоро!» деб дуо қилмоқда. Бироқ унинг егани ҳаром, кийгани ҳаром ва (бутунлай) ҳаром билан озиқланган. Бундай кишининг дуоси қандай қилиб ижобат бўлсин?!",
+  "source": "Муслим ривояти.",
+  "arabic": "عَنْ أَبِي هُرَيْرَةَ رَضِيَ اللهُ تَعَالَى عَنْهُ قَالَ: قَالَ رَسُولُ اللهِ ﷺ: «إِنَّ اللهَ تَعَالَى طَيِّبٌ لَا يَقْبَلُ إِلَّا طَيِّبًا، وَإِنَّ اللهَ أَمَرَ المُؤْمِنِينَ بِمَا أَمَرَ بِهِ المُرْسَلِينَ، فَقَالَ: ﴿يَا أَيُّهَا الرُّسُلُ كُلُوا مِنَ الطَّيِّبَاتِ وَاعْمَلُوا صَالِحًا﴾ [المؤمنون: 51]، وَقَالَ: ﴿يَا أَيُّهَا الَّذِينَ آمَنُوا كُلُوا مِنْ طَيِّبَاتِ مَا رَزَقْنَاكُمْ﴾ [البقرة: 172]». ثُمَّ ذَكَرَ الرَّجُلَ يُطِيلُ السَّفَرَ أَشْعَثَ أَغْبَرَ، يَمُدُّ يَدَيْهِ إِلَى السَّمَاءِ: يَا رَبِّ، يَا رَبِّ، وَمَطْعَمُهُ حَرَامٌ، وَمَشْرَبُهُ حَرَامٌ، وَمَلْبَسُهُ حَرَامٌ، وَغُذِيَ بِالحَرَامِ، فَأَنَّى يُسْتَجَابُ لِذَلِكَ؟! رواه مسلم."
+},
+{
+  "id": 11,
+  "title": "Шубҳали нарсаларни тарк этмоқ",
+  "narrator": "Абу Муҳаммад Ҳасан ибн Али ибн Абу Толиб розияллоҳу анҳу",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васаллам дедилар: «Сени шубҳага солган нарсани қўйгин-да, шубҳалантирмайдиган (ҳалол-покиза) нарсани ол».",
+  "source": "Термизий ва Насоий ривояти. Термизий ҳасан-саҳиҳ ҳадис деган.",
+  "arabic": "عَنْ أَبِي مُحَمَّدٍ الحَسَنِ بْنِ عَلِيِّ بْنِ أَبِي طَالِبٍ سِبْطِ رَسُولِ اللهِ ﷺ وَرَيْحَانَتِهِ رَضِيَ اللهُ عَنْهُمَا قَالَ: حَفِظْتُ مِنْ رَسُولِ اللهِ ﷺ: «دَعْ مَا يَرِيبُكَ إِلَى مَا لَا يَرِيبُكَ». رواه الترمذي والنسائي، وقال الترمذي: حديث حسن صحيح."
+},
+{
+  "id": 12,
+  "title": "Фойдали нарсалар билан машғул бўлиш",
+  "narrator": "Абу Ҳурайра розияллоҳу анҳу",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васаллам дедилар:\n— Кишининг ўзи учун зарур бўлмаган нарсаларни тарк қилиши унинг Исломининг гўзаллигидандир.",
+  "source": "Термизий ва Ибн Можа ривояти. Ҳасан ҳадис.",
+  "arabic": "عَنْ أَبِي هُرَيْرَةَ رَضِيَ اللهُ عَنْهُ قَالَ: قَالَ رَسُولُ اللهِ ﷺ: «مِنْ حُسْنِ إِسْلَامِ المَرْءِ تَرْكُهُ مَا لَا يَعْنِيهِ». حديث حسن، رواه الترمذي وغيره هكذا."
+},
+{
+  "id": 13,
+  "title": "Иймон ва Ислом биродарлиги",
+  "narrator": "Абу Ҳамза Анас ибн Молик розияллоҳу анҳу",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васалламнинг ходимларидан ривоят қилинади: Набий соллаллоҳу алайҳи васаллам дедилар: «Сизлардан бирортангиз то ўзи учун яхши кўрган нарсани биродари учун ҳам яхши кўрмагунча мўмин бўлолмайди».",
+  "source": "Бухорий ва Муслим ривояти.",
+  "arabic": "عَنْ أَبِي حَمْزَةَ أَنَسِ بْنِ مَالِكٍ رَضِيَ اللهُ تَعَالَى عَنْهُ خَادِمِ رَسُولِ اللهِ ﷺ عَنِ النَّبِيِّ ﷺ قَالَ: «لَا يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لِأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ». رواه البخاري ومسلم."
+},
+{
+  "id": 14,
+  "title": "Мусулмон кишининг қони тўкилмайди",
+  "narrator": "Ибн Масъуд розияллоҳу анҳу",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васаллам дедилар:\n— Аллоҳдан ўзга илоҳ йўқлигига ва менинг Пайғамбар эканимга гувоҳлик келтирган мусулмон кишининг қони (ни тўкиш) фақат (қуйидаги) уч ҳолатдагина ҳалол бўлади: жуфти-ҳалоли бўлган (аёл-эркак) зинокор, жонга-жон сифатида (яъни қасддан бировни ўлдирган киши) ва (муртадлик сабабли) жамоатни тарк қилиб (Ислом) динидан чиққан кимса.",
+  "source": "Бухорий ва Муслим ривояти.",
+  "arabic": "عَنِ ابْنِ مَسْعُودٍ رَضِيَ اللهُ عَنْهُ قَالَ: قَالَ رَسُولُ اللهِ ﷺ: «لَا يَحِلُّ دَمُ امْرِئٍ مُسْلِمٍ إِلَّا بِإِحْدَى ثَلَاثٍ: الثَّيِّبُ الزَّانِي، وَالنَّفْسُ بِالنَّفْسِ، وَالتَّارِكُ لِدِينِهِ المُفَارِقُ لِلْجَمَاعَةِ». رواه البخاري ومسلم."
+},
+{
+  "id": 15,
+  "title": "Фақат яхши сўзларни сўзламоқ, меҳмон ва қўшни ҳаққига риоя этмоқ иймоний хислатлардандир",
+  "narrator": "Абу Ҳурайра розияллоҳу анҳу",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васаллам дедилар:\n— Ким Аллоҳга ва Охират кунига иймон келтирган бўлса, (фақат) яхши сўзларни гапирсин ёки сукут сақласин.\n— Ким Аллоҳга ва Охират кунига иймон келтирган бўлса, қўшнисини иззат-икром қилсин.\n— Ким Аллоҳга ва Охират кунига иймон келтирган бўлса, меҳмонини иззат-икром қилсин.",
+  "source": "Бухорий ва Муслим ривояти.",
+  "arabic": "عَنْ أَبِي هُرَيْرَةَ رَضِيَ اللهُ عَنْهُ أَنَّ رَسُولَ اللهِ ﷺ قَالَ: «مَنْ كَانَ يُؤْمِنُ بِاللهِ وَاليَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ، وَمَنْ كَانَ يُؤْمِنُ بِاللهِ وَاليَوْمِ الآخِرِ فَلْيُكْرِمْ جَارَهُ، وَمَنْ كَانَ يُؤْمِنُ بِاللهِ وَاليَوْمِ الآخِرِ فَلْيُكْرِمْ ضَيْفَهُ». رواه البخاري ومسلم."
+},
+{
+  "id": 16,
+  "title": "Ғазаб қилма - жаннатий бўласан!",
+  "narrator": "Абу Ҳурайра розияллоҳу анҳу",
+  "text": "Бир киши Набий соллаллоҳу алайҳи васалламга: «Менга насиҳат қилинг», деди. Расулуллоҳ соллаллоҳу алайҳи васаллам:\n— Ғазаб қилма! — дедилар.\nУ киши бир неча бор (саволини) такрорлади. Расулуллоҳ соллаллоҳу алайҳи васаллам (ҳар гал):\n— Ғазаб қилма! — деб жавоб бердилар.",
+  "source": "Бухорий ривояти.",
+  "arabic": "عَنْ أَبِي هُرَيْرَةَ رَضِيَ اللهُ عَنْهُ أَنَّ رَجُلًا قَالَ لِلنَّبِيِّ ﷺ: أَوْصِنِي. قَالَ: «لَا تَغْضَبْ». فَرَدَّدَ مِرَارًا قَالَ: «لَا تَغْضَبْ». رواه البخاري."
+},
+{
+  "id": 17,
+  "title": "Ҳар бир ишни пухта қилмоқ лозим",
+  "narrator": "Абу Яъло Шаддод ибн Авс розияллоҳу анҳу",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васаллам дедилар: «Аллоҳ таоло ҳар бир нарсада эҳсонни (чиройли амал қилишни) фарз этди. Бас, (биронта жонзотни) ўлдирадиган бўлсангизлар, чиройли суратда ўлдиринглар (яъни қийнамасдан, тезда жонини олинглар). Сўядиган бўлсангизлар ҳам, (пичоқни ўткирлаб) чиройли суратда сўйинглар. Ҳар бирингиз пичоғини ўткирласин ва сўйиладиган жонзотни роҳатлантирсин».",
+  "source": "Муслим ривояти.",
+  "arabic": "عَنْ أَبِي يَعْلَى شَدَّادِ بْنِ أَوْسٍ رَضِيَ اللهُ تَعَالَى عَنْهُ عَنْ رَسُولِ اللهِ ﷺ قَالَ: «إِنَّ اللهَ كَتَبَ الإِحْسَانَ عَلَى كُلِّ شَيْءٍ، فَإِذَا قَتَلْتُمْ فَأَحْسِنُوا القِتْلَةَ، وَإِذَا ذَبَحْتُمْ فَأَحْسِنُوا الذِّبْحَةَ، وَلْيُحِدَّ أَحَدُكُمْ شَفْرَتَهُ، وَلْيُرِحْ ذَبِيحَتَهُ». رواه مسلم."
+},
+{
+  "id": 18,
+  "title": "Аллоҳ таолодан қўрқиш ва ҳусни хулқ",
+  "narrator": "Абу Зар Жундуб ибн Жунода ва Абу Абдураҳмон Муъоз ибн Жабал розияллоҳу анҳумо",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васаллам дедилар: «Қаерда бўлсанг ҳам Аллоҳдан қўрқ. Ёмонлик кетидан уни ўчириб юборадиган яхшиликни эргаштир. Одамларга гўзал хулқ билан муомала қил».",
+  "source": "Термизий ривояти. Ҳасан-саҳиҳ ҳадис.",
+  "arabic": "عَنْ أَبِي ذَرٍّ جُنْدُبِ بْنِ جُنَادَةَ وَأَبِي عَبْدِ الرَّحْمَنِ مُعَاذِ بْنِ جَبَلٍ رَضِيَ اللهُ عَنْهُمَا عَنْ رَسُولِ اللهِ ﷺ قَالَ: «اتَّقِ اللهَ حَيْثُمَا كُنْتَ، وَأَتْبِعِ السَّيِّئَةَ الحَسَنَةَ تَمْحُهَا، وَخَالِقِ النَّاسَ بِخُلُقٍ حَسَنٍ». رواه الترمذي وقال: حديث حسن، وفي بعض النسخ: حسن صحيح."
+},
+{
+  "id": 19,
+  "title": "Аллоҳ таоло ҳифзу ҳимояси, мадади ва нусрати",
+  "narrator": "Абул Аббос Абдуллоҳ ибн Аббос розияллоҳу анҳумо",
+  "text": "Бир куни мен Расулуллоҳ соллаллоҳу алайҳи васалламнинг орқаларида (уловда) эдим. Шунда у зот дедилар: «Эй йигитча, сенга бир неча сўзларни ўргатаман: Аллоҳни (У Зотнинг буйруқларини бажариш ва қайтариқларидан тийилиш билан) асрагин, У Зот сени асрайди. Аллоҳни асрагин, Уни қаршингда топасан. Ёруғ кунларингда Аллоҳни танигин, оғир кунларингда У Зот сени танийди. Билгинки, нима сени четлаб ўтган бўлса, унинг сенга тегиши (тақдирда) йўқ эди. Сенга етган нарсанинг (тақдири азалда) сени четлаб ўтиши йўқ эди. Билгинки, ғалаба сабр билан, ёруғлик-ечим қайғу-қийинчилик билан, оғирлик енгиллик билан биргадир».",
+  "source": "Термизий ривояти. Ҳасан-саҳиҳ ҳадис.",
+  "arabic": "عَنْ أَبِي العَبَّاسِ عَبْدِ اللهِ بْنِ عَبَّاسٍ رَضِيَ اللهُ عَنْهُمَا قَالَ: كُنْتُ خَلْفَ النَّبِيِّ ﷺ يَوْمًا فَقَالَ: «يَا غُلَامُ إِنِّي أُعَلِّمُكَ كَلِمَاتٍ: احْفَظِ اللهَ يَحْفَظْكَ، احْفَظِ اللهَ تَجِدْهُ تُجَاهَكَ، إِذَا سَأَلْتَ فَاسْأَلِ اللهَ، وَإِذَا اسْتَعَنْتَ فَاسْتَعِنْ بِاللهِ، وَاعْلَمْ أَنَّ الأُمَّةَ لَوِ اجْتَمَعَتْ عَلَى أَنْ يَنْفَعُوكَ بِشَيْءٍ لَمْ يَنْفَعُوكَ إِلَّا بِشَيْءٍ قَدْ كَتَبَهُ اللهُ لَكَ، وَإِنِ اجْتَمَعُوا عَلَى أَنْ يَضُرُّوكَ بِشَيْءٍ لَمْ يَضُرُّوكَ إِلَّا بِشَيْءٍ قَدْ كَتَبَهُ اللهُ عَلَيْكَ، رُفِعَتِ الأَقْلَامُ وَجَفَّتِ الصُّحُفُ». رواه الترمذي وقال: حديث حسن صحيح. وفي رواية غير الترمذي: «احْفَظِ اللهَ تَجِدْهُ أَمَامَكَ، تَعَرَّفْ إِلَى اللهِ فِي الرَّخَاءِ يَعْرِفْكَ فِي الشِّدَّةِ، وَاعْلَمْ أَنَّ مَا أَخْطَأَكَ لَمْ يَكُنْ لِيُصِيبَكَ، وَمَا أَصَابَكَ لَمْ يَكُنْ لِيُخْطِئَكَ، وَاعْلَمْ أَنَّ النَّصْرَ مَعَ الصَّبْرِ، وَأَنَّ الفَرَجَ مَعَ الكَرْبِ، وَأَنَّ مَعَ العُسْرِ يُسْرًا»."
+},
+{
+  "id": 20,
+  "title": "Ҳаё иймондандир",
+  "narrator": "Абу Масъуд Уқба ибн Амр ал-Ансорий ал-Бадрий розияллоҳу анҳу",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васаллам дедилар:\n— Аввалги Пайғамбарлардан қолган сўз шуки: агар уялмасанг, хоҳлаган ишингни қил!",
+  "source": "Бухорий ривояти.",
+  "arabic": "عَنْ أَبِي مَسْعُودٍ عُقْبَةَ بْنِ عَمْرٍو الأَنْصَارِيِّ البَدْرِيِّ رَضِيَ اللهُ عَنْهُ قَالَ: قَالَ رَسُولُ اللهِ ﷺ: «إِنَّ مِمَّا أَدْرَكَ النَّاسُ مِنْ كَلَامِ النُّبُوَّةِ الأُولَى: إِذَا لَمْ تَسْتَحْيِ فَاصْنَعْ مَا شِئْتَ». رواه البخاري."
+},
+{
+  "id": 21,
+  "title": "Ҳақ устида собитқадамлик ва иймон",
+  "narrator": "Абу Амр (ёки Амра) Суфён ибн Абдуллоҳ ас-Сақафий розияллоҳу анҳу",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васалламга дедим:\n— Ё Расулуллоҳ! Менга Ислом (ақидаси, шариати) да шундай бир сўз айтингки, бу ҳақда бошқа ҳеч кимдан сўрамай.\nРасулуллоҳ соллаллоҳу алайҳи васаллам дедилар:\n— «Аллоҳга иймон келтирдим» деб айтгандан сўнг мустақим — (ҳақ устида) тўғри бўл!",
+  "source": "Муслим ривояти.",
+  "arabic": "عَنْ أَبِي عَمْرٍو، وَقِيلَ أَبِي عَمْرَةَ سُفْيَانَ بْنِ عَبْدِ اللهِ رَضِيَ اللهُ عَنْهُ قَالَ: قُلْتُ: يَا رَسُولَ اللهِ، قُلْ لِي فِي الإِسْلَامِ قَوْلًا لَا أَسْأَلُ عَنْهُ أَحَدًا غَيْرَكَ. قَالَ: «قُلْ: آمَنْتُ بِاللهِ، ثُمَّ اسْتَقِمْ». رواه مسلم."
+},
+{
+  "id": 22,
+  "title": "Жаннат йўли",
+  "narrator": "Абу Абдуллоҳ Жобир ибн Абдуллоҳ ал-Ансорий розияллоҳу анҳу",
+  "text": "(Нуъмон ибн Қавқал деган) бир киши Расулуллоҳ соллаллоҳу алайҳи васалламдан сўради:\n— Айтингчи, мен фарз намозларини ўқисам, Рамазон рўзасини тутсам, ҳалолни ҳалол деб, ҳаромни ҳаром деб билсам ва бошқа ҳеч нарса зиёда қилмасам, жаннатга кираманми?\n— Ҳа! — дедилар Набий соллаллоҳу алайҳи васаллам.",
+  "source": "Муслим ривояти.",
+  "arabic": "عَنْ أَبِي عَبْدِ اللهِ جَابِرِ بْنِ عَبْدِ اللهِ الأَنْصَارِيِّ رَضِيَ اللهُ عَنْهُ أَنَّ رَجُلًا سَأَلَ النَّبِيَّ ﷺ فَقَالَ: أَرَأَيْتَ إِذَا صَلَّيْتُ المَكْتُوبَاتِ، وَصُمْتُ رَمَضَانَ، وَأَحْلَلْتُ الحَلَالَ، وَحَرَّمْتُ الحَرَامَ، وَلَمْ أَزِدْ عَلَى ذَلِكَ شَيْئًا، أَأَدْخُلُ الجَنَّةَ؟ قَالَ: «نَعَمْ». رواه مسلم."
+},
+{
+  "id": 23,
+  "title": "Ҳар бир яхшилик садақадир",
+  "narrator": "Абу Молик Ҳорис ибн Осим ал-Ашъарий розияллоҳу анҳу",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васаллам дедилар: «Поклик иймоннинг ярмидир. «Алҳамду лиллаҳ» калимаси мезонни тўлдиради. «Субҳаналлоҳи валҳамду лиллаҳ» калималари эса осмонлар ва ер орасидаги масофани тўлдиради. Намоз нурдир. Садақа ҳужжат ва бурҳондир. Сабр зиёдир. Қуръон эса сенинг фойдангга ёки зарарингга ҳужжатдир. Барча инсонлар тонг оттирадилар ва ўз нафсларини сотадилар: кимдир уни озод қилади, кимдир эса уни ҳалок қилади».",
+  "source": "Муслим ривояти.",
+  "arabic": "عَنْ أَبِي مَالِكٍ الحَارِثِ بْنِ عَاصِمٍ الأَشْعَرِيِّ رَضِيَ اللهُ عَنْهُ قَالَ: قَالَ رَسُولُ اللهِ ﷺ: «الطُّهُورُ شَطْرُ الإِيمَانِ، وَالحَمْدُ لِلَّهِ تَمْلَأُ المِيزَانَ، وَسُبْحَانَ اللهِ وَالحَمْدُ لِلَّهِ تَمْلَآنِ - أَوْ تَمْلَأُ - مَا بَيْنَ السَّمَاءِ وَالأَرْضِ، وَالصَّلَاةُ نُورٌ، وَالصَّدَقَةُ بُرْهَانٌ، وَالصَّبْرُ ضِيَاءٌ، وَالقُرْآنُ حُجَّةٌ لَكَ أَوْ عَلَيْكَ، كُلُّ النَّاسِ يَغْدُو فَبَائِعٌ نَفْسَهُ فَمُعْتِقُهَا أَوْ مُوبِقُهَا». رواه مسلم."
+},
+{
+  "id": 24,
+  "title": "Аллоҳ зулмни ҳаром қилди",
+  "narrator": "Абу Зар Ғифорий розияллоҳу анҳу",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васаллам Аллоҳ азза ва жалладан ривоят қилиб дедилар. Аллоҳ таоло айтади:\n— «Эй бандаларим, Мен зулмни ўзимга ҳаром қилдим. Уни сизларнинг ўртангизда ҳам ҳаром этдим. Бас, бир-бирларингизга зулм қилмангиз.\nЭй бандаларим, барчаларингиз залолатдасизлар. Фақат Мен ҳидоят этганларгина бундан мустасно. Бас, Мендан ҳидоят тиланг, сизларни ҳидоятга йўллайман.\nЭй бандаларим, барчаларингиз очсизлар. Фақат Мен таом берганларгина оч эмас. Бас, Мендан таом сўрангиз, сизларни таомлантираман.\nЭй бандаларим, барчаларингиз яланғочсизлар. Фақат Мен кийинтирганигина яланғоч эмас. Бас, Мендан кийим сўрангиз, сизларни кийинтираман.\nЭй бандаларим, сизлар кеча-ю кундуз хато қиласизлар. (Фақат) Мен барча гуноҳларни мағфират этаман. Бас, мендан мағфират тилангиз, сизларни мағфират қиламан.\nЭй бандаларим, сизлар Менинг зараримга ҳеч қачон етолмайсизлар! Менинг фойдамга ҳам асло етолмайсизлар!\nЭй бандаларим, агар аввалингиз-у охирингиз, инсу жинларингиз орангиздаги энг тақводор инсоннинг қалбидек бўлса ҳам, бу Менинг мулкимга ҳеч нарса зиёда қилмайди.\nЭй бандаларим, агар аввалингиз-у охирингиз, инсу жинларингиз бир жойга тўпланиб Мендан (ҳожатларини) сўрасалар ва Мен уларнинг ҳар бирига сўраган нарсасини берганимда ҳам, бу Менинг ҳузуримдаги нарсаларни игна денгизга ботирилганда (денгиз сувидан) қанчалик камайтирадиган бўлса, ўшанча миқдорда камайтиради.\nЭй бандаларим, мана шу амалларингиз — Мен уларни ҳисоблаб қўяман ва шунга қараб сизларга тўлиқ жазо-мукофот берурман. Ким яхшиликни топса, бас, Аллоҳга ҳамд айтсин. Ким бошқа нарсани топса, фақат ўзини маломат қилсин!»",
+  "source": "Муслим ривояти.",
+  "arabic": "عَنْ أَبِي ذَرٍّ الغِفَارِيِّ رَضِيَ اللهُ عَنْهُ عَنِ النَّبِيِّ ﷺ فِيمَا يَرْوِيهِ عَنْ رَبِّهِ عَزَّ وَجَلَّ أَنَّهُ قَالَ: «يَا عِبَادِي، إِنِّي حَرَّمْتُ الظُّلْمَ عَلَى نَفْسِي وَجَعَلْتُهُ بَيْنَكُمْ مُحَرَّمًا فَلَا تَظَالَمُوا. يَا عِبَادِي، كُلُّكُمْ ضَالٌّ إِلَّا مَنْ هَدَيْتُهُ فَاسْتَهْدُونِي أَهْدِكُمْ. يَا عِبَادِي، كُلُّكُمْ جَائِعٌ إِلَّا مَنْ أَطْعَمْتُهُ فَاسْتَطْعِمُونِي أُطْعِمْكُمْ. يَا عِبَادِي، كُلُّكُمْ عَارٍ إِلَّا مَنْ كَسَوْتُهُ فَاسْتَكْسُونِي أَكْسُكُمْ. يَا عِبَادِي، إِنَّكُمْ تُخْطِئُونَ بِاللَّيْلِ وَالنَّهَارِ وَأَنَا أَغْفِرُ الذُّنُوبَ جَمِيعًا فَاسْتَغْفِرُونِي أَغْفِرْ لَكُمْ. يَا عِبَادِي، إِنَّكُمْ لَنْ تَبْلُغُوا ضَرِّي فَتَضُرُّونِي وَلَنْ تَبْلُغُوا نَفْعِي فَتَنْفَعُونِي. يَا عِبَادِي، لَوْ أَنَّ أَوَّلَكُمْ وَآخِرَكُمْ وَإِنْسَكُمْ وَجِنَّكُمْ كَانُوا عَلَى أَتْقَى قَلْبِ رَجُلٍ وَاحِدٍ مِنْكُمْ مَا زَادَ ذَلِكَ فِي مُلْكِي شَيْئًا. يَا عِبَادِي، لَوْ أَنَّ أَوَّلَكُمْ وَآخِرَكُمْ وَإِنْسَكُمْ وَجِنَّكُمْ كَانُوا عَلَى أَفْجَرِ قَلْبِ رَجُلٍ وَاحِدٍ مِنْكُمْ مَا نَقَصَ ذَلِكَ مِنْ مُلْكِي شَيْئًا. يَا عِبَادِي، لَوْ أَنَّ أَوَّلَكُمْ وَآخِرَكُمْ وَإِنْسَكُمْ وَجِنَّكُمْ قَامُوا فِي صَعِيدٍ وَاحِدٍ فَسَأَلُونِي فَأَعْطَيْتُ كُلَّ وَاحِدٍ مَسْأَلَتَهُ مَا نَقَصَ ذَلِكَ مِمَّا عِنْدِي إِلَّا كَمَا يَنْقُصُ المِخْيَطُ إِذَا أُدْخِلَ البَحْرَ. يَا عِبَادِي، إِنَّمَا هِيَ أَعْمَالُكُمْ أُحْصِيهَا لَكُمْ ثُمَّ أُوَفِّيكُمْ إِيَّاهَا، فَمَنْ وَجَدَ خَيْرًا فَلْيَحْمَدِ اللهَ، وَمَنْ وَجَدَ غَيْرَ ذَلِكَ فَلَا يَلُومَنَّ إِلَّا نَفْسَهُ». رواه مسلم."
+},
+{
+  "id": 25,
+  "title": "Аллоҳ таоло фазлу марҳамати",
+  "narrator": "Абу Зар Ғифорий розияллоҳу анҳу",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васаллам асҳобларидан бир нечаси (камбағал-муҳтожлари) Набий соллаллоҳу алайҳи васалламга дедилар:\n— Ё Расулуллоҳ! Бой-бадавлат одамлар ажру савобларни олиб кетди. Улар биз намоз ўқиганимиздек намоз ўқийдилар, рўза тутганимиздек рўза тутадилар ва (ўз эҳтиёжларидан) ортиқча мол-давлатларини садақа қилиб юборишади.\n— Аллоҳ таоло сизларга ҳам садақа қилинадиган нарсаларни бермаганми? — дедилар Пайғамбар соллаллоҳу алайҳи васаллам. — Ҳар бир тасбеҳингиз (Субҳаналлоҳ) садақа, ҳар бир такбирингиз (Аллоҳу акбар) садақа, ҳар бир таҳлилингиз (Ла илаҳа илла Аллоҳ) садақа, яхшиликка буюриш садақа, ёмонликдан қайтариш садақа ва (жуфти ҳалолингиз билан) қовушишингиз ҳам садақа!\n— Ё Расулуллоҳ! Агар биримиз (ўз ҳалоли билан қовушиб) шаҳватини қондирса, шунинг учун ҳам ажр оладими?\n— Ахир у шаҳватини ҳаромга тўккани учун гуноҳкор бўлармиди?! Демак, шаҳватини ҳалолга тўккани учун унга ажр ёзилади.",
+  "source": "Муслим ривояти.",
+  "arabic": "عَنْ أَبِي ذَرٍّ رَضِيَ اللهُ عَنْهُ أَنَّ أُنَاسًا مِنْ أَصْحَابِ رَسُولِ اللهِ ﷺ قَالُوا لِلنَّبِيِّ ﷺ: يَا رَسُولَ اللهِ، ذَهَبَ أَهْلُ الدُّثُورِ بِالأُجُورِ، يُصَلُّونَ كَمَا نُصَلِّي، وَيَصُومُونَ كَمَا نَصُومُ، وَيَتَصَدَّقُونَ بِفُضُولِ أَمْوَالِهِمْ. قَالَ: «أَوَلَيْسَ قَدْ جَعَلَ اللهُ لَكُمْ مَا تَصَّدَّقُونَ؟ إِنَّ بِكُلِّ تَسْبِيحَةٍ صَدَقَةً، وَكُلِّ تَكْبِيرَةٍ صَدَقَةً، وَكُلِّ تَحْمِيدَةٍ صَدَقَةً، وَكُلِّ تَهْلِيلَةٍ صَدَقَةً، وَأَمْرٌ بِالمَعْرُوفِ صَدَقَةٌ، وَنَهْيٌ عَنْ مُنْكَرٍ صَدَقَةٌ، وَفِي بُضْعِ أَحَدِكُمْ صَدَقَةٌ». قَالُوا: يَا رَسُولَ اللهِ، أَيَأْتِي أَحَدُنَا شَهْوَتَهُ وَيَكُونُ لَهُ فِيهَا أَجْرٌ؟ قَالَ: «أَرَأَيْتُمْ لَوْ وَضَعَهَا فِي حَرَامٍ أَكَانَ عَلَيْهِ وِزْرٌ؟ فَكَذَلِكَ إِذَا وَضَعَهَا فِي الحَلَالِ كَانَ لَهُ أَجْرٌ». رواه مسلم."
+},
+{
+  "id": 26,
+  "title": "Ислоҳ ва адолат",
+  "narrator": "Абу Ҳурайра розияллоҳу анҳу",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васаллам дедилар:\n— Инсонлардаги жами аъзолар учун қуёш чиқадиган ҳар бир кунда садақа мавжуд: икки (тортишиб қолган) киши ўртасида адолат билан ҳукм қилмоғинг — садақа. Бировга уловига чиқишида ёрдам бериб, уни чиқариб қўйишинг ёки нарсасини (ердан) олиб беришинг — садақа. Яхши сўз — садақа. (Одамлар юрадиган) йўлдан (тош, тикан, чўп каби) озорларни олиб ташламоқ ҳам садақадир.",
+  "source": "Бухорий ва Муслим ривояти.",
+  "arabic": "عَنْ أَبِي هُرَيْرَةَ رَضِيَ اللهُ عَنْهُ قَالَ: قَالَ رَسُولُ اللهِ ﷺ: «كُلُّ سُلَامَى مِنَ النَّاسِ عَلَيْهِ صَدَقَةٌ كُلَّ يَوْمٍ تَطْلُعُ فِيهِ الشَّمْسُ: تَعْدِلُ بَيْنَ اثْنَيْنِ صَدَقَةٌ، وَتُعِينُ الرَّجُلَ فِي دَابَّتِهِ فَتَحْمِلُهُ عَلَيْهَا أَوْ تَرْفَعُ لَهُ عَلَيْهَا مَتَاعَهُ صَدَقَةٌ، وَالكَلِمَةُ الطَّيِّبَةُ صَدَقَةٌ، وَبِكُلِّ خُطْوَةٍ تَمْشِيهَا إِلَى الصَّلَاةِ صَدَقَةٌ، وَتُمِيطُ الأَذَى عَنِ الطَّرِيقِ صَدَقَةٌ». رواه البخاري ومسلم."
+},
+{
+  "id": 27,
+  "title": "Яхшилик ва ёмонлик",
+  "narrator": "Наввос ибн Самъон розияллоҳу анҳу ва Вобиса ибн Маъбад розияллоҳу анҳу",
+  "text": "Набий соллаллоҳу алайҳи васаллам дедилар:\n— Яхшилик — ҳусни хулқдир. Гуноҳ эса кўнглингиз хотиржам бўлмаган ва одамлар билиб қолишини истамайдиган ишингиздир.\nҚалбингдан сўра! Нафсинг ва қалбинг хотиржам бўлган нарса яхшиликдир. Гарчи одамлар фатво берган бўлсалар-да, нафсингни хотиржам қилмаган, кўнглингга ўрнашмаган иш гуноҳдир.",
+  "source": "Муслим, Имом Аҳмад ва Доримий ривояти.",
+  "arabic": "عَنِ النَّوَّاسِ بْنِ سَمْعَانَ رَضِيَ اللهُ عَنْهُ عَنِ النَّبِيِّ ﷺ قَالَ: «البِرُّ حُسْنُ الخُلُقِ، وَالإِثْمُ مَا حَاكَ فِي نَفْسِكَ وَكَرِهْتَ أَنْ يَطَّلِعَ عَلَيْهِ النَّاسُ». رواه مسلم.\nوَعَنْ وَابِصَةَ بْنِ مَعْبَدٍ رَضِيَ اللهُ عَنْهُ قَالَ: أَتَيْتُ رَسُولَ اللهِ ﷺ فَقَالَ: «جِئْتَ تَسْأَلُ عَنِ البِرِّ وَالإِثْمِ؟». قُلْتُ: نَعَمْ. قَالَ: «اسْتَفْتِ قَلْبَكَ، البِرُّ مَا اطْمَأَنَّتْ إِلَيْهِ النَّفْسُ وَاطْمَأَنَّ إِلَيْهِ القَلْبُ، وَالإِثْمُ مَا حَاكَ فِي النَّفْسِ وَتَرَدَّدَ فِي الصَّدْرِ، وَإِنْ أَفْتَاكَ النَّاسُ وَأَفْتَوْكَ». حديث حسن."
+},
+{
+  "id": 28,
+  "title": "Суннатларни маҳкам тутинг! Бидъатлардан йироқ бўлинг!",
+  "narrator": "Абу Нажиҳ Ирбод ибн Сория розияллоҳу анҳу",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васаллам дедилар: Сизларга Аллоҳ азза ва жалладан қўрқишни васият қиламан. Агар бир қул устингизга амир бўлса ҳам, унга қулоқ тутинг, итоат этинг. Ҳали сизлардан (узоқроқ) яшаганларингиз кўп ихтилоф-келишмовчиликларни кўради. Бас, менинг суннатимга ва ҳақ йўлга бошланмиш хулафои рошидин суннатига эргашингиз! Уни маҳкам ушланглар. (Динда) янги пайдо бўлган ишлардан эҳтиёт бўлинглар. Зеро, ҳар бир бидъат залолатдир.",
+  "source": "Абу Довуд ва Термизий ривояти.",
+  "arabic": "عَنْ أَبِي نَجِيحٍ العِرْبَاضِ بْنِ سَارِيَةَ رَضِيَ اللهُ عَنْهُ قَالَ: وَعَظَنَا رَسُولُ اللهِ ﷺ مَوْعِظَةً وَجِلَتْ مِنْهَا القُلُوبُ وَذَرَفَتْ مِنْهَا العُيُونُ، فَقُلْنَا: يَا رَسُولَ اللهِ كَأَنَّهَا مَوْعِظَةُ مُوَدِّعٍ فَأَوْصِنَا. قَالَ: «أُوصِيكُمْ بِتَقْوَى اللهِ عَزَّ وَجَلَّ وَالسَّمْعِ وَالطَّاعَةِ وَإِنْ تَأَمَّرَ عَلَيْكُمْ عَبْدٌ، فَإِنَّهُ مَنْ يَعِشْ مِنْكُمْ فَسَيَرَى اخْتِلَافًا كَثِيرًا، فَعَلَيْكُمْ بِسُنَّتِي وَسُنَّةِ الخُلَفَاءِ الرَّاشِدِينَ المَهْدِيِّينَ، عَضُّوا عَلَيْهَا بِالنَّوَاجِذِ، وَإِيَّاكُمْ وَمُحْدَثَاتِ الأُمُورِ، فَإِنَّ كُلَّ مُحْدَثَةٍ بِدْعَةٌ، وَكُلَّ بِدْعَةٍ ضَلَالَةٌ». رواه أبو داود والترمذي، وقال: حديث حسن صحيح."
+},
+{
+  "id": 29,
+  "title": "Яхшилик эшиклари ва ҳидоят йўллари",
+  "narrator": "Муъоз ибн Жабал розияллоҳу анҳу",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васаллам дедилар: Аллоҳга ибодат қил ва Унга ҳеч нарсани шерик этма. Намозни тўкис адо эт, закот бер, Рамазон рўзасини тут ва байт (Каъба) га ҳаж қил! Рўза (дўзахдан сақловчи) қалқондир. Садақа бамисоли сув ўтни ўчирганидек гуноҳ-маъсиятларни ўчиради. Кишининг кечаси туриб ўқиган намози ҳам (яхшилик эшикларидандир). Ишнинг боши — Ислом, устуни — намоз ва чўққиси — жиҳоддир! Ўзинг учун мана буни — тилни — тийгин! Одамларни юзлари билан дўзахга итқитаётган нарса тилларининг мевалари эмасми?!",
+  "source": "Термизий ривояти. Ҳасан-саҳиҳ ҳадис.",
+  "arabic": "عَنْ مُعَاذِ بْنِ جَبَلٍ رَضِيَ اللهُ عَنْهُ قَالَ: قُلْتُ: يَا رَسُولَ اللهِ، أَخْبِرْنِي بِعَمَلٍ يُدْخِلُنِي الجَنَّةَ وَيُبَاعِدُنِي مِنَ النَّارِ. قَالَ: «لَقَدْ سَأَلْتَ عَنْ عَظِيمٍ، وَإِنَّهُ لَيَسِيرٌ عَلَى مَنْ يَسَّرَهُ اللهُ تَعَالَى عَلَيْهِ: تَعْبُدُ اللهَ لَا تُشْرِكُ بِهِ شَيْئًا، وَتُقِيمُ الصَّلَاةَ، وَتُؤْتِي الزَّكَاةَ، وَتَصُومُ رَمَضَانَ، وَتَحُجُّ البَيْتَ». ثُمَّ قَالَ: «أَلَا أَدُلُّكَ عَلَى أَبْوَابِ الخَيْرِ؟ الصَّوْمُ جُنَّةٌ، وَالصَّدَقَةُ تُطْفِئُ الخَطِيئَةَ كَمَا يُطْفِئُ المَاءُ النَّارَ، وَصَلَاةُ الرَّجُلِ فِي جَوْفِ اللَّيْلِ». ثُمَّ تَلَا: ﴿تَتَجَافَى جُنُوبُهُمْ عَنِ المَضَاجِعِ﴾ حَتَّى بَلَغَ ﴿يَعْمَلُونَ﴾ [السجدة: 16-17]. ثُمَّ قَالَ: «أَلَا أُخْبِرُكَ بِرَأْسِ الأَمْرِ وَعَمُودِهِ وَذِرْوَةِ سَنَامِهِ؟». قُلْتُ: بَلَى يَا رَسُولَ اللهِ. قَالَ: «رَأْسُ الأَمْرِ الإِسْلَامُ، وَعَمُودُهُ الصَّلَاةُ، وَذِرْوَةُ سَنَامِهِ الجِهَادُ». ثُمَّ قَالَ: «أَلَا أُخْبِرُكَ بِمَلَاكِ ذَلِكَ كُلِّهِ؟». قُلْتُ: بَلَى يَا رَسُولَ اللهِ. فَأَخَذَ بِلِسَانِهِ وَقَالَ: «كُفَّ عَلَيْكَ هَذَا». قُلْتُ: يَا نَبِيَّ اللهِ، وَإِنَّا لَمُؤَاخَذُونَ بِمَا نَتَكَلَّمُ بِهِ؟ فَقَالَ: «ثَكِلَتْكَ أُمُّكَ يَا مُعَاذُ، وَهَلْ يَكُبُّ النَّاسَ فِي النَّارِ عَلَى وُجُوهِهِمْ - أَوْ قَالَ: عَلَى مَنَاخِرِهِمْ - إِلَّا حَصَائِدُ أَلْسِنَتِهِمْ». رواه الترمذي وقال: حديث حسن صحيح."
+},
+{
+  "id": 30,
+  "title": "Аллоҳ таоло белгилаб қўйган ҳадлар ва ҳаром ишлар",
+  "narrator": "Абу Саълаба ал-Хушаний Журсум ибн Ношир розияллоҳу анҳу",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васаллам дедилар: Аллоҳ таоло (бир қанча) фарзларни лозим этди, бас, уларни зое қилмангиз. Ҳад-чегараларни белгилади, уларни босиб ўтмангиз. (Айрим) нарсаларни ҳаром қилди, уларга яқин йўламангиз. (Баъзи) нарсалар хусусида — унутганидан эмас, сизларга марҳамат кўрсатиб — сукут қилди, бас, улар устида баҳс қилмангиз.",
+  "source": "Дороқутний ва бошқалар ривояти.",
+  "arabic": "عَنْ أَبِي ثَعْلَبَةَ الخُشَنِيِّ جُرْثُومِ بْنِ نَاشِرٍ رَضِيَ اللهُ عَنْهُ عَنْ رَسُولِ اللهِ ﷺ قَالَ: «إِنَّ اللهَ فَرَضَ فَرَائِضَ فَلَا تُضَيِّعُوهَا، وَحَدَّ حُدُودًا فَلَا تَعْتَدُوهَا، وَحَرَّمَ أَشْيَاءَ فَلَا تَنْتَهِكُوهَا، وَسَكَتَ عَنْ أَشْيَاءَ رَحْمَةً لَكُمْ غَيْرَ نِسْيَانٍ فَلَا تَبْحَثُوا عَنْهَا». حديث حسن، رواه الدارقطني وغيره."
+},
+{
+  "id": 31,
+  "title": "Зоҳидлик моҳияти ва унинг самараси",
+  "narrator": "Абул Аббос Саҳл ибн Саъд ас-Соидий розияллоҳу анҳу",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васаллам дедилар: Дунёга нисбатан зоҳид бўл (кўнгил берма), Аллоҳ сени яхши кўради. Одамларнинг олдидаги нарсаларга зоҳид бўл (кўз тикма), шунда одамлар ҳам сени яхши кўришади.",
+  "source": "Ибн Можа ва бошқалар ривояти.",
+  "arabic": "عَنْ أَبِي العَبَّاسِ سَهْلِ بْنِ سَعْدٍ السَّاعِدِيِّ رَضِيَ اللهُ عَنْهُ قَالَ: جَاءَ رَجُلٌ إِلَى النَّبِيِّ ﷺ فَقَالَ: يَا رَسُولَ اللهِ، دُلَّنِي عَلَى عَمَلٍ إِذَا عَمِلْتُهُ أَحَبَّنِي اللهُ وَأَحَبَّنِي النَّاسُ. فَقَالَ: «ازْهَدْ فِي الدُّنْيَا يُحِبَّكَ اللهُ، وَازْهَدْ فِيمَا عِنْدَ النَّاسِ يُحِبَّكَ النَّاسُ». حديث حسن، رواه ابن ماجه وغيره بأسانيد حسنة."
+},
+{
+  "id": 32,
+  "title": "Исломда зарар етказиш йўқ",
+  "narrator": "Абу Саъид Саъд ибн Синон ал-Худрий розияллоҳу анҳу",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васаллам дедилар: (Исломда зиёни тегмаган кишига) зарар бермоқ ҳам, (зиён-заҳмат етказган кимсага ғайри шаръий суратда) зарар қайтармоқ ҳам йўқдир!",
+  "source": "Ибн Можа, Дороқутний ва бошқалар ривояти.",
+  "arabic": "عَنْ أَبِي سَعِيدٍ سَعْدِ بْنِ مَالِكِ بْنِ سِنَانٍ الخُدْرِيِّ رَضِيَ اللهُ عَنْهُ أَنَّ رَسُولَ اللهِ ﷺ قَالَ: «لَا ضَرَرَ وَلَا ضِرَارَ». حديث حسن، رواه ابن ماجه والدارقطني وغيرهما مسندًا."
+},
+{
+  "id": 33,
+  "title": "Исломда қозилик асослари",
+  "narrator": "Абдуллоҳ ибн Аббос розияллоҳу анҳумо",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васаллам дедилар: Агар одамларнинг (қуруқ) даъволарига (асосланиб сўраган нарсалари) берилганида, (айрим) кимсалар (бутун) қавмининг моли-ю қонини даъво қилиб чиққан бўларди. Бироқ даъво қилувчи далил келтириши, инкор этувчи эса қасам ичиши шарт.",
+  "source": "Байҳақий, Абу Довуд, Насоий, Термизий ва Ибн Можа ривояти.",
+  "arabic": "عَنِ ابْنِ عَبَّاسٍ رَضِيَ اللهُ عَنْهُمَا أَنَّ رَسُولَ اللهِ ﷺ قَالَ: «لَوْ يُعْطَى النَّاسُ بِدَعْوَاهُمْ لَادَّعَى رِجَالٌ أَمْوَالَ قَوْمٍ وَدِمَاءَهُمْ، وَلَكِنِ البَيِّنَةُ عَلَى المُدَّعِي، وَاليَمِينُ عَلَى مَنْ أَنْكَرَ». حديث حسن، رواه البيهقي هكذا، وبعضه في الصحيحين."
+},
+{
+  "id": 34,
+  "title": "Ёмонликнинг олдини олмоқ - исломий бурч!",
+  "narrator": "Абу Саъид ал-Худрий розияллоҳу анҳу",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васаллам дедилар: Қай бирингиз бирон ёмон ишни кўрса, уни қўли билан ўзгартирсин. (Қўли билан ўзгартиришга) кучи етмаса, тили билан ўзгартирсин. (Агар тили билан ўзгартиришга) қодир бўлмаса, қалби билан ўзгартирсин. Бу (яъни, қалб билан ўзгартириш) иймоннинг ўта заифлигидир.",
+  "source": "Муслим ривояти.",
+  "arabic": "عَنْ أَبِي سَعِيدٍ الخُدْرِيِّ رَضِيَ اللهُ عَنْهُ قَالَ: سَمِعْتُ رَسُولَ اللهِ ﷺ يَقُولُ: «مَنْ رَأَى مِنْكُمْ مُنْكَرًا فَلْيُغَيِّرْهُ بِيَدِهِ، فَإِنْ لَمْ يَسْتَطِعْ فَبِلِسَانِهِ، فَإِنْ لَمْ يَسْتَطِعْ فَبِقَلْبِهِ، وَذَلِكَ أَضْعَفُ الإِيمَانِ». رواه مسلم."
+},
+{
+  "id": 35,
+  "title": "Исломий биродарлик ва мусулмоннинг ҳақлари",
+  "narrator": "Абу Ҳурайра розияллоҳу анҳу",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васаллам дедилар: Бир-бирингизга ҳасад қилмангиз, сотиш учун эмас, бировга зарар бермоқ ниятида молнинг нархини бозор баҳосидан ошириб қўймангиз, ўзаро нафрат-адоватда бўлмангиз, бир-бирларингиздан юз ўгириб ўртадаги алоқани узмангиз. Мусулмон — мусулмоннинг биродаридир: у (биродарига) зулм қилмайди, ёлғон гапирмайди ва уни камситмайди. Тақво — мана бу ерда! Мусулмоннинг қони, моли ва обрў-номуси бошқа бир мусулмон учун ҳаромдир.",
+  "source": "Муслим ривояти.",
+  "arabic": "عَنْ أَبِي هُرَيْرَةَ رَضِيَ اللهُ عَنْهُ قَالَ: قَالَ رَسُولُ اللهِ ﷺ: «لَا تَحَاسَدُوا، وَلَا تَنَاجَشُوا، وَلَا تَبَاغَضُوا، وَلَا تَدَابَرُوا، وَلَا يَبِعْ بَعْضُكُمْ عَلَى بَيْعِ بَعْضٍ، وَكُونُوا عِبَادَ اللهِ إِخْوَانًا. المُسْلِمُ أَخُو المُسْلِمِ، لَا يَظْلِمُهُ، وَلَا يَخْذُلُهُ، وَلَا يَكْذِبُهُ، وَلَا يَحْقِرُهُ. التَّقْوَى هَاهُنَا - وَيُشِيرُ إِلَى صَدْرِهِ ثَلَاثَ مَرَّاتٍ - بِحَسْبِ امْرِئٍ مِنَ الشَّرِّ أَنْ يَحْقِرَ أَخَاهُ المُسْلِمَ. كُلُّ المُسْلِمِ عَلَى المُسْلِمِ حَرَامٌ: دَمُهُ وَمَالُهُ وَعِرْضُهُ». رواه مسلم."
+},
+{
+  "id": 36,
+  "title": "Эзгулик мажмуаси",
+  "narrator": "Абу Ҳурайра розияллоҳу анҳу",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васаллам дедилар: Ким бир мўминнинг (бошидан) дунёвий ғам-ташвишини аритса, Аллоҳ таоло унинг (бошидан) Қиёмат кунининг ғамини аритади. Ким қийналган кишига ёрдам берса, Аллоҳ таоло унга дунё-ю Охиратда енгиллик-ёрдам беради. Модомики, банда биродарининг ёрдамида экан, Аллоҳ таоло унинг ёрдамида бўлади. (Фойдали) илм талабида йўл босган инсонга Аллоҳ таоло жаннат йўлини осон қилиб қўяди.",
+  "source": "Муслим ривояти.",
+  "arabic": "عَنْ أَبِي هُرَيْرَةَ رَضِيَ اللهُ عَنْهُ عَنِ النَّبِيِّ ﷺ قَالَ: «مَنْ نَفَّسَ عَنْ مُؤْمِنٍ كُرْبَةً مِنْ كُرَبِ الدُّنْيَا نَفَّسَ اللهُ عَنْهُ كُرْبَةً مِنْ كُرَبِ يَوْمِ القِيَامَةِ، وَمَنْ يَسَّرَ عَلَى مُعْسِرٍ يَسَّرَ اللهُ عَلَيْهِ فِي الدُّنْيَا وَالآخِرَةِ، وَمَنْ سَتَرَ مُسْلِمًا سَتَرَهُ اللهُ فِي الدُّنْيَا وَالآخِرَةِ، وَاللهُ فِي عَوْنِ العَبْدِ مَا كَانَ العَبْدُ فِي عَوْنِ أَخِيهِ، وَمَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا سَهَّلَ اللهُ لَهُ بِهِ طَرِيقًا إِلَى الجَنَّةِ، وَمَا اجْتَمَعَ قَوْمٌ فِي بَيْتٍ مِنْ بُيُوتِ اللهِ يَتْلُونَ كِتَابَ اللهِ وَيَتَدَارَسُونَهُ بَيْنَهُمْ إِلَّا نَزَلَتْ عَلَيْهِمُ السَّكِينَةُ وَغَشِيَتْهُمُ الرَّحْمَةُ وَحَفَّتْهُمُ المَلَائِكَةُ وَذَكَرَهُمُ اللهُ فِيمَنْ عِنْدَهُ، وَمَنْ بَطَّأَ بِهِ عَمَلُهُ لَمْ يُسْرِعْ بِهِ نَسَبُهُ». رواه مسلم بهذا اللفظ."
+},
+{
+  "id": 37,
+  "title": "Аллоҳ таоло адолати, фазли ва қудрати",
+  "narrator": "Абдуллоҳ ибн Аббос розияллоҳу анҳумо",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васаллам дедилар: Аллоҳ таоло ҳасанотларни ҳам, ёмон амалларни ҳам ёзиб қўйди. Ким бир яхшиликни кўнглига тугиб, кейин уни қилмаса-да, Аллоҳ таоло уни комил яхшилик сифатида ёзиб қўяди. Агар бир яхшиликни кўнглига тугиб, уни амалга ҳам оширса, Аллоҳ таоло уни ўз ҳузурида ўн ҳасанотдан етти юз баробаргача ёзиб қўяди.",
+  "source": "Бухорий ва Муслим ривояти.",
+  "arabic": "عَنِ ابْنِ عَبَّاسٍ رَضِيَ اللهُ عَنْهُمَا عَنِ النَّبِيِّ ﷺ فِيمَا يَرْوِيهِ عَنْ رَبِّهِ تَبَارَكَ وَتَعَالَى أَنَّهُ قَالَ: «إِنَّ اللهَ كَتَبَ الحَسَنَاتِ وَالسَّيِّئَاتِ ثُمَّ بَيَّنَ ذَلِكَ، فَمَنْ هَمَّ بِحَسَنَةٍ فَلَمْ يَعْمَلْهَا كَتَبَهَا اللهُ عِنْدَهُ حَسَنَةً كَامِلَةً، وَإِنْ هَمَّ بِهَا فَعَمِلَهَا كَتَبَهَا اللهُ عِنْدَهُ عَشْرَ حَسَنَاتٍ إِلَى سَبْعِمِائَةِ ضِعْفٍ إِلَى أَضْعَافٍ كَثِيرَةٍ. وَإِنْ هَمَّ بِسَيِّئَةٍ فَلَمْ يَعْمَلْهَا كَتَبَهَا اللهُ عِنْدَهُ حَسَنَةً كَامِلَةً، وَإِنْ هَمَّ بِهَا فَعَمِلَهَا كَتَبَهَا اللهُ سَيِّئَةً وَاحِدَةً». رواه البخاري ومسلم في صحيحيهما بهذه الحروف."
+},
+{
+  "id": 38,
+  "title": "Аллоҳ таоло муҳаббатини қозонмоқ",
+  "narrator": "Абу Ҳурайра розияллоҳу анҳу",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васаллам дедилар: Аллоҳ таоло айтади: «Кимда-ким Менинг дўстимга душманлик қилса, Мен унга (қарши) уруш эълон қиламан. Бандам Мен унинг зиммасига фарз этган амаллардан кўра суюклироқ нарса билан Менга нисбатан яқинлик ҳосил қилмаган. Бандам Менга нафл ибодатлар билан тобора яқинлашаверганидан, ҳатто уни яхши кўриб қоламан».",
+  "source": "Бухорий ривояти.",
+  "arabic": "عَنْ أَبِي هُرَيْرَةَ رَضِيَ اللهُ عَنْهُ قَالَ: قَالَ رَسُولُ اللهِ ﷺ: «إِنَّ اللهَ تَعَالَى قَالَ: مَنْ عَادَى لِي وَلِيًّا فَقَدْ آذَنْتُهُ بِالحَرْبِ. وَمَا تَقَرَّبَ إِلَيَّ عَبْدِي بِشَيْءٍ أَحَبَّ إِلَيَّ مِمَّا افْتَرَضْتُهُ عَلَيْهِ. وَلَا يَزَالُ عَبْدِي يَتَقَرَّبُ إِلَيَّ بِالنَّوَافِلِ حَتَّى أُحِبَّهُ، فَإِذَا أَحْبَبْتُهُ كُنْتُ سَمْعَهُ الَّذِي يَسْمَعُ بِهِ، وَبَصَرَهُ الَّذِي يُبْصِرُ بِهِ، وَيَدَهُ الَّتِي يَبْطِشُ بِهَا، وَرِجْلَهُ الَّتِي يَمْشِي بِهَا، وَلَئِنْ سَأَلَنِي لَأُعْطِيَنَّهُ، وَلَئِنِ اسْتَعَاذَنِي لَأُعِيذَنَّهُ». رواه البخاري."
+},
+{
+  "id": 39,
+  "title": "Исломда танглик йўқ",
+  "narrator": "Абдуллоҳ ибн Аббос розияллоҳу анҳумо",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васаллам дедилар: «Аллоҳ таоло мен учун умматимдан билмасдан, унутиб ва мажбур ҳолатда қилинган ишларни кечди».",
+  "source": "Ибн Можа, Байҳақий ва бошқалар ривояти.",
+  "arabic": "عَنِ ابْنِ عَبَّاسٍ رَضِيَ اللهُ عَنْهُمَا أَنَّ رَسُولَ اللهِ ﷺ قَالَ: «إِنَّ اللهَ تَجَاوَزَ لِي عَنْ أُمَّتِي الخَطَأَ وَالنِّسْيَانَ وَمَا اسْتُكْرِهُوا عَلَيْهِ». حديث حسن، رواه ابن ماجه والبيهقي وغيرهما."
+},
+{
+  "id": 40,
+  "title": "Фурсатни ғанимат билинг",
+  "narrator": "Абдуллоҳ ибн Умар розияллоҳу анҳумо",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васаллам дедилар: Дунёда бир ғариб ёки йўловчидек бўлгин. Кун ботса, тонгни кутма. Тонг кирса, кечни кутма. Касалликдан олдин соғлигингни, ўлимингдан олдин ҳаётингни ғанимат бил.",
+  "source": "Бухорий ривояти.",
+  "arabic": "عَنِ ابْنِ عُمَرَ رَضِيَ اللهُ عَنْهُمَا قَالَ: أَخَذَ رَسُولُ اللهِ ﷺ بِمَنْكِبَيَّ فَقَالَ: «كُنْ فِي الدُّنْيَا كَأَنَّكَ غَرِيبٌ أَوْ عَابِرُ سَبِيلٍ». وَكَانَ ابْنُ عُمَرَ رَضِيَ اللهُ عَنْهُمَا يَقُولُ: إِذَا أَمْسَيْتَ فَلَا تَنْتَظِرِ الصَّبَاحَ، وَإِذَا أَصْبَحْتَ فَلَا تَنْتَظِرِ المَسَاءَ، وَخُذْ مِنْ صِحَّتِكَ لِمَرَضِكَ، وَمِنْ حَيَاتِكَ لِمَوْتِكَ. رواه البخاري."
+},
+{
+  "id": 41,
+  "title": "Иймон асоси шариатга эргашишдир",
+  "narrator": "Абу Муҳаммад Абдуллоҳ ибн Амр ибн Ос розияллоҳу анҳу",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васаллам дедилар: Мен олиб келган нарсага нафси тобеъ бўлмагунча ҳеч бирингиз (комил) мўмин бўлмайсиз.",
+  "source": "«Китобу ҳужжа»дан.",
+  "arabic": "عَنْ أَبِي مُحَمَّدٍ عَبْدِ اللهِ بْنِ عَمْرِو بْنِ العَاصِ رَضِيَ اللهُ عَنْهُمَا قَالَ: قَالَ رَسُولُ اللهِ ﷺ: «لَا يُؤْمِنُ أَحَدُكُمْ حَتَّى يَكُونَ هَوَاهُ تَبَعًا لِمَا جِئْتُ بِهِ». حديث حسن صحيح."
+},
+{
+  "id": 42,
+  "title": "Аллоҳ азза ва жалланинг мағфирати кенгдир",
+  "narrator": "Анас розияллоҳу анҳу",
+  "text": "Расулуллоҳ соллаллоҳу алайҳи васаллам дедилар: Аллоҳ таоло деди: «Эй Одам боласи, модомики, сен Менга дуо қилиб, Мендан умидвор турар экансан, гуноҳинг қанча бўлишидан қатъий назар, (уларнинг кўплигига ҳам) парво қилмасдан мағфират этаман. Агар гуноҳинг булутларга қадар етса-да, Мендан истиғфор тиласанг, сени мағфират этаман».",
+  "source": "Термизий ва бошқалар ривояти.",
+  "arabic": "عَنْ أَنَسِ بْنِ مَالِكٍ رَضِيَ اللهُ عَنْهُ قَالَ: سَمِعْتُ رَسُولَ اللهِ ﷺ يَقُولُ: قَالَ اللهُ تَعَالَى: «يَا ابْنَ آدَمَ إِنَّكَ مَا دَعَوْتَنِي وَرَجَوْتَنِي غَفَرْتُ لَكَ عَلَى مَا كَانَ مِنْكَ وَلَا أُبَالِي. يَا ابْنَ آدَمَ لَوْ بَلَغَتْ ذُنُوبُكَ عَنَانَ السَّمَاءِ ثُمَّ اسْتَغْفَرْتَنِي غَفَرْتُ لَكَ. يَا ابْنَ آدَمَ إِنَّكَ لَوْ أَتَيْتَنِي بِقُرَابِ الأَرْضِ خَطَايَا ثُمَّ لَقِيتَنِي لَا تُشْرِكُ بِي شَيْئًا لَأَتَيْتُكَ بِقُرَابِهَا مَغْفِرَةً». رواه الترمذي وقال: حديث حسن صحيح."
+}
+];
+let curN=0,th='dark',sT;
+function ss(k,v){localStorage.setItem(k,v);}
+function gs(k){return localStorage.getItem(k);}
+function apTh(){document.documentElement.className=th;ss('th',th);}
+function buildGrid(q){
+  const grid=document.getElementById('hadisGrid');
+  grid.innerHTML='';
+  // Муқаддима картаси (қидирувсиз ҳолатда ёки муқаддима сўзи мос келса кўринади)
+  const qLower=q?q.toLowerCase():'';
+  const muqMatch=!q||'муқаддима муаллиф нававий кириш сўзбоши'.includes(qLower);
+  if(muqMatch){
+    const mcard=document.createElement('div');
+    mcard.className='muq-card';
+    mcard.innerHTML='<div class="muq-card-icon">📜</div><div class="muq-card-body"><div class="muq-card-title">Муаллиф муқаддимаси</div><div class="muq-card-sub">Имом Нававий раҳимаҳуллоҳ</div></div><div class="muq-card-arrow">→</div>';
+    mcard.setAttribute('role','button');
+    mcard.setAttribute('aria-label','Муаллиф муқаддимаси');
+    mcard.onclick=()=>App.openMuqaddima();
+    grid.appendChild(mcard);
+  }
+  QD.forEach(h=>{
+    if(q&&!h.text.toLowerCase().includes(q.toLowerCase())&&!h.narrator.toLowerCase().includes(q.toLowerCase())&&!h.title.toLowerCase().includes(q.toLowerCase()))return;
+    const card=document.createElement('div');
+    card.id='card-'+h.id;
+    card.className='hadis-card';
+    card.innerHTML=`<div class="card-num">${h.id}</div><div class="card-body"><div class="card-topic">${h.title}</div><div class="card-narrator">${h.narrator}</div></div><div class="card-arrow">→</div>`;
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', `${h.id}-ҳадис: ${h.title}`);
+    card.onclick=()=>App.open(h.id);
+    grid.appendChild(card);
+  });
+  document.getElementById('gridCount').textContent=grid.querySelectorAll('.hadis-card').length;
+}
+function showPanel(p){
+  document.getElementById('homePage').style.display=p==='home'?'block':'none';
+  document.getElementById('hadisPage').style.display=p==='hadis'?'block':'none';
+  document.getElementById('searchPage').style.display=p==='search'?'block':'none';
+  document.getElementById('muqaddimaPage').style.display=p==='muqaddima'?'block':'none';
+  if(p==='home')document.getElementById('homePage').offsetHeight;
+  if(p==='hadis')document.getElementById('hadisPage').classList.add('visible');
+  if(p==='search')document.getElementById('searchPage').classList.add('visible');
+  if(p==='muqaddima')document.getElementById('muqaddimaPage').classList.add('visible');
+}
+function openHadis(n){
+  const h=QD.find(x=>x.id===n);
+  if(!h)return;
+  curN=n;
+  document.getElementById('hadisNum').textContent=n+'-ҳадис';
+  document.getElementById('hadisTitle').textContent=h.title;
+  const textEl=document.getElementById('hadisText');
+  textEl.innerHTML=h.text.replace(/\n/g,'<br>');
+  document.getElementById('hadisNarrator').innerHTML='<strong>Ривояти:</strong> '+h.narrator;
+  document.getElementById('hadisSource').innerHTML='<strong>Манба:</strong> '+h.source;
+  document.getElementById('prevBtn').className='nav-btn'+(n<=1?' disabled':'');
+  document.getElementById('nextBtn').className='nav-btn'+(n>=QD.length?' disabled':'');
+  // Арабча матнни бошқариш
+  const arWrap=document.getElementById('arabicToggleWrap');
+  const arBlock=document.getElementById('hadisArabic');
+  const arText=document.getElementById('hadisArabicText');
+  if(h.arabic){
+    arWrap.style.display='flex';
+    arText.innerHTML=h.arabic.replace(/\n/g,'<br>');
+    // localStorageдан ҳолатни тиклаш
+    const showAr=gs('showArabic')==='1';
+    setArabicVisible(showAr);
+  }else{
+    arWrap.style.display='none';
+    arBlock.classList.remove('visible');
+  }
+  document.title=n+'-ҳадис: '+h.title+' | Имом Нававий';
+  showPanel('hadis');
+  window.scrollTo(0,0);
+}
+function setArabicVisible(show){
+  const arBlock=document.getElementById('hadisArabic');
+  const arBtn=document.getElementById('arabicToggleBtn');
+  const arTxt=document.getElementById('arabicToggleText');
+  if(show){
+    arBlock.classList.add('visible');
+    arBtn.classList.add('active');
+    arTxt.textContent='Арабчани яшириш';
+  }else{
+    arBlock.classList.remove('visible');
+    arBtn.classList.remove('active');
+    arTxt.textContent='Арабча матн';
+  }
+  ss('showArabic',show?'1':'0');
+}
+function rfCard(n){
+  const card=document.getElementById('card-'+n);
+  if(card)card.className='hadis-card';
+}
+const App={
+  open:openHadis,
+  goHome:function(){showPanel('home');curN=0;window.scrollTo(0,0);},
+  toggleTheme:function(){th=th==='dark'?'light':'dark';apTh();},
+  openMuqaddima:function(){
+    document.title='Муқаддима | Имом Нававий — Қирқ ҳадис';
+    showPanel('muqaddima');
+    window.scrollTo(0,0);
+  },
+  toggleArabic:function(){
+    const isVisible=document.getElementById('hadisArabic').classList.contains('visible');
+    setArabicVisible(!isVisible);
+  },
+  doSearch:function(v){
+    if(!v.trim()){showPanel('home');return;}
+    var res=QD.filter(h=>h.text.toLowerCase().includes(v.toLowerCase())||h.narrator.toLowerCase().includes(v.toLowerCase())||h.title.toLowerCase().includes(v.toLowerCase()));
+    var list=document.getElementById('searchResults');
+    if(!res.length){list.innerHTML='<div class="no-results"><div class="no-results-icon">🔍</div><p>Натижа топилмади</p></div>';showPanel('search');return;}
+    list.innerHTML=res.map(h=>`<div class="result-item" onclick="App.open(${h.id})" role="button" aria-label="${h.id}-ҳадис: ${h.title}"><div class="result-label">${h.id}-ҳадис — ${h.title}</div><div class="result-text">${h.text.replace(/\n/g,' ').substring(0,200)}...</div></div>`).join('');
+    document.getElementById('searchMeta').textContent=res.length+' та натижа';
+    showPanel('search');
+  }
+};
+document.getElementById('searchInput').addEventListener('input',function(e){
+  var v=e.target.value;
+  clearTimeout(sT);
+  sT=setTimeout(function(){App.doSearch(v);},300);
+});
+window.addEventListener('scroll',function(){
+  document.getElementById('scrollTop').className='scroll-top'+(window.scrollY>400?' visible':'');
+});
+th=gs('th')||'dark';
+apTh();buildGrid('');showPanel('home');
+</script>
+</body>
+</html>
