@@ -606,6 +606,7 @@ function ss(k,v){localStorage.setItem(k,v);}
 function gs(k){return localStorage.getItem(k);}
 function apTh(){document.documentElement.className=th;ss('th',th);}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function normAr(s){return String(s).replace(/[ً-ٰٟۖ-ۭ]/g,"").replace(/[أإآ]/g,"ا").replace(/ى/g,"ي").replace(/ة/g,"ه");}
 function highlight(s,q){
   const safe=esc(s);
   if(!q)return safe;
@@ -615,10 +616,11 @@ function highlight(s,q){
 function matches(h,q){
   if(!q)return true;
   const lq=q.toLowerCase();
+  const nq=normAr(q);
   return h.text.toLowerCase().includes(lq)
     ||h.narrator.toLowerCase().includes(lq)
     ||h.title.toLowerCase().includes(lq)
-    ||(h.arabic&&h.arabic.includes(q))
+    ||(h.arabic&&normAr(h.arabic).includes(nq))
     ||(h.source&&h.source.toLowerCase().includes(lq));
 }
 function buildGrid(q){
@@ -719,6 +721,26 @@ function snippet(text,q,len=200){
   const piece=(start>0?'…':'')+flat.substring(start,end)+(end<flat.length?'…':'');
   return highlight(piece,q);
 }
+function bestSnippet(h,q,len=200){
+  const lq=q.toLowerCase();
+  if(h.text.toLowerCase().includes(lq))return snippet(h.text,q,len);
+  if(h.narrator.toLowerCase().includes(lq))return '<em>Ровий:</em> '+highlight(h.narrator,q);
+  if(h.source&&h.source.toLowerCase().includes(lq))return '<em>Манба:</em> '+highlight(h.source,q);
+  if(h.arabic){
+    const nq=normAr(q);
+    const nar=normAr(h.arabic);
+    const ai=nar.indexOf(nq);
+    if(ai>=0){
+      const start=Math.max(0,ai-40);
+      const end=Math.min(h.arabic.length,start+160);
+      const piece=(start>0?'…':'')+h.arabic.substring(start,end)+(end<h.arabic.length?'…':'');
+      const safe=esc(piece);
+      const re=new RegExp('('+esc(q).replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'|'+esc(q).split('').join('[ؐ-ًؚ-ٰٟۖ-ۭ࣓-ࣿ]*').replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','g');
+      return '<span lang="ar" dir="rtl" style="font-family:\'Scheherazade New\',serif;">'+safe+'</span>';
+    }
+  }
+  return snippet(h.text,q,len);
+}
 const App={
   open:openHadis,
   goHome:function(){showPanel('home');curN=0;document.title='Имом Нававийнинг «Қирқ ҳадис» тўплами';setHash('');window.scrollTo(0,0);},
@@ -738,7 +760,7 @@ const App={
     const res=QD.filter(h=>matches(h,v));
     const list=document.getElementById('searchResults');
     if(!res.length){list.innerHTML='<div class="no-results"><div class="no-results-icon">🔍</div><p>Натижа топилмади</p></div>';document.getElementById('searchMeta').textContent='0 та натижа';showPanel('search');return;}
-    list.innerHTML=res.map(h=>`<div class="result-item" onclick="App.open(${h.id})" role="button" aria-label="${esc(h.id+'-ҳадис: '+h.title)}"><div class="result-label">${h.id}-ҳадис — ${highlight(h.title,v)}</div><div class="result-text">${snippet(h.text,v)}</div></div>`).join('');
+    list.innerHTML=res.map(h=>`<div class="result-item" onclick="App.open(${h.id})" role="button" aria-label="${esc(h.id+'-ҳадис: '+h.title)}"><div class="result-label">${h.id}-ҳадис — ${highlight(h.title,v)}</div><div class="result-text">${bestSnippet(h,v)}</div></div>`).join('');
     document.getElementById('searchMeta').textContent=res.length+' та натижа';
     showPanel('search');
   }
