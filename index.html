@@ -756,13 +756,23 @@ const App={
     setArabicVisible(!isVisible);
   },
   doSearch:function(v){
-    if(!v.trim()){showPanel('home');return;}
+    const grid=document.getElementById('hadisGrid');
+    const titleEl=document.querySelector('.grid-title');
+    showPanel('home');
+    if(!v.trim()){
+      buildGrid('');
+      if(titleEl)titleEl.textContent='Барча ҳадислар';
+      return;
+    }
     const res=QD.filter(h=>matches(h,v));
-    const list=document.getElementById('searchResults');
-    if(!res.length){list.innerHTML='<div class="no-results"><div class="no-results-icon">🔍</div><p>Натижа топилмади</p></div>';document.getElementById('searchMeta').textContent='0 та натижа';showPanel('search');return;}
-    list.innerHTML=res.map(h=>`<div class="result-item" onclick="App.open(${h.id})" role="button" aria-label="${esc(h.id+'-ҳадис: '+h.title)}"><div class="result-label">${h.id}-ҳадис — ${highlight(h.title,v)}</div><div class="result-text">${bestSnippet(h,v)}</div></div>`).join('');
-    document.getElementById('searchMeta').textContent=res.length+' та натижа';
-    showPanel('search');
+    if(titleEl)titleEl.textContent='Қидириш натижалари';
+    if(!res.length){
+      grid.innerHTML='<div class="no-results"><div class="no-results-icon">🔍</div><p>Натижа топилмади</p></div>';
+      document.getElementById('gridCount').textContent='0';
+      return;
+    }
+    grid.innerHTML=res.map(h=>`<div class="result-item" onclick="App.open(${h.id})" role="button" aria-label="${esc(h.id+'-ҳадис: '+h.title)}"><div class="result-label">${h.id}-ҳадис — ${highlight(h.title,v)}</div><div class="result-text">${bestSnippet(h,v)}</div></div>`).join('');
+    document.getElementById('gridCount').textContent=res.length+' та';
   }
 };
 function applyRoute(){
