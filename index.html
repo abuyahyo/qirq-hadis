@@ -775,11 +775,6 @@ window.addEventListener('hashchange',applyRoute);
 th=gs('th')||'dark';
 apTh();buildGrid('');
 applyRoute();
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('sw.js').catch(()=>{});
-  });
-}
 </script>
 </body>
 </html>
