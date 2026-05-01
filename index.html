@@ -70,13 +70,15 @@ body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;min-
 .hadis-text{display:block;padding:16px 8px;border-radius:6px;margin:0 -8px 16px;line-height:2;color:var(--text);font-size:16px;text-align:justify;hyphens:auto;-webkit-hyphens:auto}
 .hadis-text:active,.hadis-text:hover{background:var(--surface)}
 .hadis-text mark{background:rgba(201,168,76,.25);color:var(--gold-light);border-radius:2px;padding:0 2px}
-.arabic-toggle-wrap{display:flex;justify-content:center;margin:18px 0 8px}
-.arabic-toggle{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-family:'Roboto',sans-serif;font-size:12px;padding:7px 14px;border-radius:20px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .2s;letter-spacing:.02em}
-.arabic-toggle:active,.arabic-toggle:hover{border-color:var(--gold-dark);color:var(--gold)}
-.arabic-toggle.active{border-color:var(--gold-dark);color:var(--gold);background:var(--surface2)}
-.arabic-toggle-ar{font-family:'Amiri',serif;font-size:15px;line-height:1}
-.arabic-toggle-icon{font-size:11px;transition:transform .3s}
-.arabic-toggle.active .arabic-toggle-icon{transform:rotate(180deg)}
+.lang-tabs{display:flex;justify-content:center;margin:18px 0 14px}
+.lang-tabs[hidden]{display:none}
+.lang-tabs-inner,.lang-tabs{}
+.lang-tabs > .lang-tab:first-of-type{border-radius:999px 0 0 999px;border-right:none}
+.lang-tabs > .lang-tab:last-of-type{border-radius:0 999px 999px 0}
+.lang-tab{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-family:'Roboto',sans-serif;font-size:12px;padding:8px 18px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:color .15s,background .15s,border-color .15s;letter-spacing:.02em;line-height:1}
+.lang-tab[lang="ar"],.lang-tab span[lang="ar"]{font-family:'Amiri',serif;font-size:14px}
+.lang-tab:hover,.lang-tab:active{color:var(--gold)}
+.lang-tab.active{color:var(--gold);background:var(--surface2);border-color:var(--gold-dark)}
 .hadis-arabic{display:none;margin:0 0 18px;padding:20px 18px;background:var(--surface);border:1px solid var(--border);border-right:3px solid var(--gold-dark);border-radius:8px 0 0 8px;direction:rtl;text-align:justify;text-align-last:justify;font-family:'Scheherazade New','Amiri',serif;font-size:22px;line-height:2.2;color:var(--text);font-weight:400}
 .hadis-arabic.visible{display:block;animation:fadeIn .3s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
@@ -197,15 +199,11 @@ body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;min-
 <div class="hadis-pg-num" id="hadisNum"></div>
 <h2 class="hadis-pg-title" id="hadisTitle"></h2>
 </div>
-<div class="arabic-toggle-wrap" id="arabicToggleWrap">
-<button class="arabic-toggle" id="arabicToggleBtn" onclick="App.toggleArabic()" aria-label="Арабча матнни кўрсатиш/яшириш">
-<span class="arabic-toggle-ar" lang="ar">عربي</span>
-<span id="arabicToggleText">Арабча матн</span>
-<span class="arabic-toggle-icon">▼</span>
-</button>
+<div class="lang-tabs" id="langTabs" role="tablist" aria-label="Тил">
+<button class="lang-tab active" id="tabUz" role="tab" aria-selected="true" onclick="App.setLang('uz')">Ўзбекча</button>
+<button class="lang-tab" id="tabAr" role="tab" aria-selected="false" onclick="App.setLang('ar')"><span lang="ar">عربي</span> Арабча</button>
 </div>
 <div class="hadis-arabic" id="hadisArabic" lang="ar">
-<span class="hadis-arabic-label" lang="uz">Арабча матн</span>
 <div id="hadisArabicText"></div>
 </div>
 <div class="hadis-text" id="hadisText"></div>
@@ -676,36 +674,39 @@ function openHadis(n,skipRoute){
   document.getElementById('hadisSource').innerHTML='<strong>Манба:</strong> '+esc(h.source);
   document.getElementById('prevBtn').className='nav-btn'+(n<=1?' disabled':'');
   document.getElementById('nextBtn').className='nav-btn'+(n>=QD.length?' disabled':'');
-  const arWrap=document.getElementById('arabicToggleWrap');
-  const arBlock=document.getElementById('hadisArabic');
+  const tabs=document.getElementById('langTabs');
   const arText=document.getElementById('hadisArabicText');
   if(h.arabic){
-    arWrap.style.display='flex';
+    tabs.hidden=false;
     arText.innerHTML=esc(h.arabic).replace(/\n/g,'<br>');
-    setArabicVisible(gs('showArabic')==='1');
+    setLang(gs('lang')||'uz');
   }else{
-    arWrap.style.display='none';
-    arBlock.classList.remove('visible');
+    tabs.hidden=true;
+    setLang('uz');
   }
   document.title=n+'-ҳадис: '+h.title+' | Имом Нававий';
   showPanel('hadis');
   if(!skipRoute)setHash('#h/'+n);
   window.scrollTo(0,0);
 }
-function setArabicVisible(show){
-  const arBlock=document.getElementById('hadisArabic');
-  const arBtn=document.getElementById('arabicToggleBtn');
-  const arTxt=document.getElementById('arabicToggleText');
-  if(show){
-    arBlock.classList.add('visible');
-    arBtn.classList.add('active');
-    arTxt.textContent='Арабчани яшириш';
+function setLang(lang){
+  if(lang!=='ar')lang='uz';
+  const ar=document.getElementById('hadisArabic');
+  const uz=document.getElementById('hadisText');
+  const tabUz=document.getElementById('tabUz');
+  const tabAr=document.getElementById('tabAr');
+  if(lang==='ar'){
+    ar.classList.add('visible');
+    uz.style.display='none';
+    tabAr.classList.add('active');tabAr.setAttribute('aria-selected','true');
+    tabUz.classList.remove('active');tabUz.setAttribute('aria-selected','false');
   }else{
-    arBlock.classList.remove('visible');
-    arBtn.classList.remove('active');
-    arTxt.textContent='Арабча матн';
+    ar.classList.remove('visible');
+    uz.style.display='';
+    tabUz.classList.add('active');tabUz.setAttribute('aria-selected','true');
+    tabAr.classList.remove('active');tabAr.setAttribute('aria-selected','false');
   }
-  ss('showArabic',show?'1':'0');
+  ss('lang',lang);
 }
 function setHash(h){
   if(location.hash===h)return;
@@ -755,10 +756,7 @@ const App={
     if(!skipRoute)setHash('#muqaddima');
     window.scrollTo(0,0);
   },
-  toggleArabic:function(){
-    const isVisible=document.getElementById('hadisArabic').classList.contains('visible');
-    setArabicVisible(!isVisible);
-  },
+  setLang:setLang,
   doSearch:function(v){
     const grid=document.getElementById('hadisGrid');
     const titleEl=document.querySelector('.grid-title');
@@ -809,6 +807,7 @@ window.addEventListener('scroll',function(){
 });
 window.addEventListener('hashchange',applyRoute);
 th=gs('th')||'dark';
+if(!gs('lang')&&gs('showArabic')==='1')ss('lang','ar');
 apTh();buildGrid('');
 applyRoute();
 </script>
