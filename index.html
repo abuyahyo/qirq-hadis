@@ -630,7 +630,7 @@ function buildGrid(q){
   if(muqMatch){
     const mcard=document.createElement('div');
     mcard.className='muq-card';
-    mcard.innerHTML='<div class="muq-card-icon">📜</div><div class="muq-card-body"><div class="muq-card-title">Муаллиф муқаддимаси</div><div class="muq-card-sub">Имом Нававий раҳимаҳуллоҳ</div></div><div class="muq-card-arrow">→</div>';
+    mcard.innerHTML='<div class="muq-card-icon">📜</div><div class="muq-card-body"><div class="muq-card-title">Муаллиф муқаддимаси</div><div class="muq-card-sub">Имом Нававий раҳимаҳуллоҳ</div></div>';
     mcard.setAttribute('role','button');
     mcard.setAttribute('aria-label','Муаллиф муқаддимаси');
     mcard.onclick=()=>App.openMuqaddima();
@@ -643,7 +643,7 @@ function buildGrid(q){
     const card=document.createElement('div');
     card.id='card-'+h.id;
     card.className='hadis-card';
-    card.innerHTML=`<div class="card-num">${h.id}</div><div class="card-body"><div class="card-topic">${esc(h.title)}</div><div class="card-narrator">${esc(h.narrator)}</div></div><div class="card-arrow">→</div>`;
+    card.innerHTML=`<div class="card-num">${h.id}</div><div class="card-body"><div class="card-topic">${esc(h.title)}</div><div class="card-narrator">${esc(h.narrator)}</div></div>`;
     card.setAttribute('role','button');
     card.setAttribute('aria-label',`${h.id}-ҳадис: ${h.title}`);
     card.onclick=()=>App.open(h.id);
