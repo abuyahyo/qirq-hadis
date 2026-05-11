@@ -36,15 +36,16 @@ body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;min-
 .grid-title{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:var(--text-muted)}
 .grid-count{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--gold-dark)}
 .hadis-grid{display:grid;grid-template-columns:1fr;gap:10px}
-.hadis-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;cursor:pointer;transition:border-color .2s,background .2s;position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;gap:14px}
+.hadis-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;transition:border-color .2s,background .2s;position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent;display:flex;align-items:flex-start;gap:14px}
 .hadis-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--gold-dark);opacity:0;transition:opacity .2s}
 .hadis-card:active,.hadis-card:hover{border-color:var(--gold-dark);background:var(--surface2)}
 .hadis-card:active::before,.hadis-card:hover::before{opacity:1}
 .hadis-card.hidden{display:none}
-.card-num{font-family:'IBM Plex Mono',monospace;font-size:18px;color:var(--gold);font-weight:600;flex-shrink:0;min-width:38px;text-align:center;line-height:1}
+.card-num{font-family:'IBM Plex Mono',monospace;font-size:30px;color:var(--gold);font-weight:600;flex-shrink:0;min-width:48px;text-align:center;line-height:1;letter-spacing:-.02em}
 .card-num-label{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;text-align:center;margin-top:3px;display:block}
-.card-body{flex:1;min-width:0}
-.card-topic{font-size:15px;color:var(--text);font-weight:500;line-height:1.35;margin-bottom:4px}
+.card-body{flex:1;min-width:0;padding-top:2px}
+.card-topic{font-size:15px;color:var(--text);font-weight:500;line-height:1.35;margin-bottom:6px}
+.card-preview{font-size:12px;color:var(--text-muted);line-height:1.55;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;font-style:italic}
 .card-narrator{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .card-arrow{color:var(--gold-dark);font-size:16px;flex-shrink:0}
 #hadisPage{display:none;max-width:720px;margin:0 auto;padding:28px 14px 100px;opacity:0;transition:opacity 0.3s ease;}
@@ -639,7 +640,11 @@ function buildGrid(q){
     const card=document.createElement('div');
     card.id='card-'+h.id;
     card.className='hadis-card';
-    card.innerHTML=`<div class="card-num">${h.id}</div><div class="card-body"><div class="card-topic">${esc(h.title)}</div></div>`;
+    const previewSrc=h.text.replace(/[«»"]/g,'').replace(/\n/g,' ').replace(/\s+/g,' ').trim();
+    const colonIdx=previewSrc.indexOf(':');
+    const preview=(colonIdx>0&&colonIdx<60?previewSrc.substring(colonIdx+1).trim():previewSrc).substring(0,140);
+    const numStr=String(h.id).padStart(2,'0');
+    card.innerHTML=`<div class="card-num">${numStr}</div><div class="card-body"><div class="card-topic">${esc(h.title)}</div><div class="card-preview">${esc(preview)}…</div></div>`;
     card.setAttribute('role','button');
     card.setAttribute('aria-label',`${h.id}-ҳадис: ${h.title}`);
     card.onclick=()=>App.open(h.id);
