@@ -41,7 +41,7 @@ body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;min-
 .hadis-card:active,.hadis-card:hover{border-color:var(--gold-dark);background:var(--surface2)}
 .hadis-card:active::before,.hadis-card:hover::before{opacity:1}
 .hadis-card.hidden{display:none}
-.card-num{font-family:'IBM Plex Mono',monospace;font-size:30px;color:var(--gold);font-weight:600;flex-shrink:0;min-width:48px;text-align:center;line-height:1;letter-spacing:-.02em}
+.card-num{font-family:'IBM Plex Mono',monospace;font-size:20px;color:var(--gold);font-weight:500;flex-shrink:0;min-width:32px;text-align:center;line-height:1;letter-spacing:0}
 .card-num-label{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;text-align:center;margin-top:3px;display:block}
 .card-body{flex:1;min-width:0;padding-top:2px}
 .card-topic{font-size:15px;color:var(--text);font-weight:500;line-height:1.35;margin-bottom:6px}
@@ -643,8 +643,7 @@ function buildGrid(q){
     const previewSrc=h.text.replace(/[«»"]/g,'').replace(/\n/g,' ').replace(/\s+/g,' ').trim();
     const colonIdx=previewSrc.indexOf(':');
     const preview=(colonIdx>0&&colonIdx<60?previewSrc.substring(colonIdx+1).trim():previewSrc).substring(0,140);
-    const numStr=String(h.id).padStart(2,'0');
-    card.innerHTML=`<div class="card-num">${numStr}</div><div class="card-body"><div class="card-topic">${esc(h.title)}</div><div class="card-preview">${esc(preview)}…</div></div>`;
+    card.innerHTML=`<div class="card-num">${h.id}</div><div class="card-body"><div class="card-topic">${esc(h.title)}</div><div class="card-preview">${esc(preview)}…</div></div>`;
     card.setAttribute('role','button');
     card.setAttribute('aria-label',`${h.id}-ҳадис: ${h.title}`);
     card.onclick=()=>App.open(h.id);
