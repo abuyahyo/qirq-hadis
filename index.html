@@ -74,14 +74,16 @@ body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;min-
 .lang-tab span[lang="ar"]{font-family:'Amiri',serif;font-size:14px}
 .lang-tab:hover,.lang-tab:active{color:var(--gold)}
 .lang-tab.active{color:var(--gold);background:var(--surface2)}
-.hadis-tools{display:flex;align-items:center;gap:6px;margin:6px 0 14px;flex-wrap:wrap}
-.hadis-tool-btn{display:inline-flex;align-items:center;justify-content:center;background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-family:'Roboto',sans-serif;font-size:12px;padding:6px 12px;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:6px;transition:color .15s,background .15s,border-color .15s;line-height:1;min-height:30px;letter-spacing:.02em}
-.hadis-tool-btn:hover,.hadis-tool-btn:active{color:var(--gold);border-color:var(--gold-dark);background:var(--surface2)}
+.hadis-tools{display:flex;align-items:center;gap:10px;margin:24px 0 8px;flex-wrap:wrap}
+.hadis-tool-group{display:inline-flex;align-items:stretch;background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.hadis-tool-group .hadis-tool-btn{background:transparent;border:none;border-right:1px solid var(--border);border-radius:0}
+.hadis-tool-group .hadis-tool-btn:last-child{border-right:none}
+.hadis-tool-btn{display:inline-flex;align-items:center;justify-content:center;background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-family:'Roboto',sans-serif;font-size:13px;padding:8px 14px;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:10px;transition:color .15s,background .15s,border-color .15s;line-height:1;min-height:34px;letter-spacing:.02em;gap:6px}
+.hadis-tool-btn:hover,.hadis-tool-btn:active{color:var(--gold);background:var(--surface2)}
 .hadis-tool-btn.disabled{opacity:.35;pointer-events:none}
-.hadis-tool-copy{margin-left:auto;gap:6px}
 .hadis-tool-btn.copied{color:var(--gold);border-color:var(--gold);background:var(--surface2)}
-.hadis-tool-fs-small{font-size:10px}
-.hadis-tool-fs-big{font-size:14px;font-weight:600}
+.hadis-tool-fs-small{font-size:11px}
+.hadis-tool-fs-big{font-size:15px;font-weight:600}
 .hadis-arabic{display:none;margin:8px 0 18px;padding:20px 18px;background:var(--surface2);border:none;border-radius:10px;box-shadow:0 1px 2px rgba(0,0,0,.18),0 6px 18px rgba(0,0,0,.10);direction:rtl;text-align:justify;font-family:'Scheherazade New','Amiri',serif;font-size:calc(22px * var(--text-scale, 1));line-height:2.2;color:var(--text);font-weight:400}
 .hadis-arabic.visible{display:block;animation:fadeIn .3s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
@@ -198,13 +200,6 @@ body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;min-
 <h2 class="hadis-pg-title" id="hadisTitle"></h2>
 </div>
 <div class="hadis-pg-num" id="hadisNum"></div>
-<div class="hadis-tools" role="toolbar" aria-label="Бошқарув">
-<button class="hadis-tool-btn" id="fontDecBtn" onclick="App.adjustFont(-1)" title="Шрифтни кичрайтириш" aria-label="Шрифт ўлчамини камайтириш"><span class="hadis-tool-fs-small">A</span>−</button>
-<button class="hadis-tool-btn" id="fontIncBtn" onclick="App.adjustFont(1)" title="Шрифтни катталаштириш" aria-label="Шрифт ўлчамини ошириш"><span class="hadis-tool-fs-big">A</span>+</button>
-<button class="hadis-tool-btn hadis-tool-copy" id="hadisCopyBtn" onclick="App.copyHadis()" title="Матнни нусха олиш" aria-label="Ҳадис матнини нусха олиш">
-<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-<span>Нусха</span></button>
-</div>
 <div class="lang-tabs" id="langTabs" role="tablist" aria-label="Тил">
 <button class="lang-tab active" id="tabUz" role="tab" aria-selected="true" onclick="App.setLang('uz')">Ўзбекча</button>
 <button class="lang-tab" id="tabAr" role="tab" aria-selected="false" onclick="App.setLang('ar')">Арабча</button>
@@ -215,6 +210,15 @@ body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;min-
 <div class="hadis-text" id="hadisText"></div>
 <div class="hadis-narrator" id="hadisNarrator"></div>
 <div class="hadis-source" id="hadisSource"></div>
+<div class="hadis-tools" role="toolbar" aria-label="Бошқарув">
+<div class="hadis-tool-group">
+<button class="hadis-tool-btn" id="fontDecBtn" onclick="App.adjustFont(-1)" title="Шрифтни кичрайтириш" aria-label="Шрифт ўлчамини камайтириш"><span class="hadis-tool-fs-small">A</span>−</button>
+<button class="hadis-tool-btn" id="fontIncBtn" onclick="App.adjustFont(1)" title="Шрифтни катталаштириш" aria-label="Шрифт ўлчамини ошириш"><span class="hadis-tool-fs-big">A</span>+</button>
+</div>
+<button class="hadis-tool-btn" id="hadisCopyBtn" onclick="App.copyHadis()" title="Матнни нусха олиш" aria-label="Ҳадис матнини нусха олиш">
+<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+<span>Нусха</span></button>
+</div>
 </div>
 
 <div id="muqaddimaPage">
