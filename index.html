@@ -32,6 +32,10 @@ body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;min-
 .main-search-input:focus{border-color:var(--gold-dark);background:var(--surface2)}
 .main-search-input::placeholder{color:var(--text-muted)}
 .main-search-icon{position:absolute;right:26px;top:calc(50% + 10px);transform:translateY(-50%);color:var(--text-muted);pointer-events:none;font-size:16px;line-height:1}
+.main-search-clear{position:absolute;right:18px;top:calc(50% + 10px);transform:translateY(-50%);background:transparent;border:0;color:var(--text-muted);cursor:pointer;font-size:22px;line-height:1;padding:4px 8px;border-radius:6px;display:none;font-family:inherit}
+.main-search-clear:hover{color:var(--text);background:var(--surface2)}
+.main-search-wrap.has-text .main-search-icon{display:none}
+.main-search-wrap.has-text .main-search-clear{display:block}
 .grid-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .grid-title{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:var(--text-muted)}
 .grid-count{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--gold-dark)}
@@ -166,9 +170,10 @@ body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;min-
 <p class="home-sub">Ислом динининг асосий таълимотлари</p>
 </div>
 </div>
-<div class="main-search-wrap">
+<div class="main-search-wrap" id="searchWrap">
 <input type="text" class="main-search-input" id="searchInput" placeholder="Ҳадислардан қидириш..." aria-label="Ҳадислар бўйича қидириш">
 <div class="main-search-icon">🔍</div>
+<button type="button" class="main-search-clear" id="searchClear" aria-label="Қидирув матнини тозалаш">×</button>
 </div>
 <div class="hadis-grid-wrap">
 <div class="grid-header">
@@ -858,8 +863,17 @@ function applyRoute(){
 }
 document.getElementById('searchInput').addEventListener('input',function(e){
   const v=e.target.value;
+  document.getElementById('searchWrap').classList.toggle('has-text',v.length>0);
   clearTimeout(sT);
   sT=setTimeout(function(){App.doSearch(v);},300);
+});
+document.getElementById('searchClear').addEventListener('click',function(){
+  const inp=document.getElementById('searchInput');
+  inp.value='';
+  document.getElementById('searchWrap').classList.remove('has-text');
+  clearTimeout(sT);
+  App.doSearch('');
+  inp.focus();
 });
 document.addEventListener('keydown',function(e){
   if(e.target&&(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'))return;
