@@ -891,14 +891,6 @@ function _renderShareSlide(ctx,W,H,s,idx,total,h){
   ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
   ctx.fillStyle=p.gold;ctx.fillRect(0,0,W,3);
   ctx.textBaseline='top';ctx.direction='ltr';
-  ctx.fillStyle=p.muted;
-  ctx.font='500 22px Roboto, sans-serif';
-  ctx.textAlign='left';
-  ctx.fillText('ИМОМ НАВАВИЙ · ҚИРҚ ҲАДИС',s.padX,70);
-  if(total>1){
-    ctx.textAlign='right';ctx.fillStyle=p.dim;
-    ctx.fillText(idx+' / '+total,W-s.padX,70);
-  }
   ctx.fillStyle=p.gold;
   ctx.font='600 44px Roboto, sans-serif';
   ctx.textAlign='center';
@@ -947,6 +939,16 @@ function _renderShareSlide(ctx,W,H,s,idx,total,h){
       if(it.type==='line'){ctx.fillText(it.text,s.padX,y);y+=gapPx;}
       else y+=gapPx*0.4;
     }
+  }
+  // Bottom brand + slide index (centered)
+  ctx.direction='ltr';ctx.textAlign='center';ctx.textBaseline='top';
+  ctx.fillStyle=p.muted;
+  ctx.font='500 22px Roboto, sans-serif';
+  ctx.fillText('ИМОМ НАВАВИЙ · ҚИРҚ ҲАДИС',W/2,H-70);
+  if(total>1){
+    ctx.fillStyle=p.dim;
+    ctx.font='400 18px Roboto, sans-serif';
+    ctx.fillText(idx+' / '+total,W/2,H-38);
   }
 }
 async function _buildShareImages(h,useAr){
