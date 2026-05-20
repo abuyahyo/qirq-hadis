@@ -903,15 +903,7 @@ function _renderShareSlide(ctx,W,H,s,idx,total,h){
   ctx.font='600 44px Roboto, sans-serif';
   ctx.textAlign='center';
   ctx.fillText(h.id+'-ҲАДИС',W/2,108);
-  ctx.fillStyle=p.text;
-  ctx.font=s.titleFont;
-  let ty=s.titleStartY;
-  for(const t of s.titleItems){
-    if(t.type==='line'){
-      ctx.fillText(t.text,W/2,ty);ty+=s.titleLineHeight;
-    }
-  }
-  // Narrator under title (1 or 2 lines)
+  // Narrator (1 or 2 lines)
   if(s.narrLines&&s.narrLines.length){
     ctx.fillStyle=p.dim;
     ctx.font=s.narrFont;
@@ -921,7 +913,7 @@ function _renderShareSlide(ctx,W,H,s,idx,total,h){
       ctx.fillText(ln,W/2,ny);ny+=s.narrLineHeight;
     }
   }
-  // Ornament separator under title
+  // Ornament separator
   const ocx=W/2, ony=s.ornamentY, side=220, gap=24;
   const g1=ctx.createLinearGradient(ocx-side-gap,ony,ocx-gap,ony);
   g1.addColorStop(0,'rgba(0,0,0,0)');g1.addColorStop(1,p.goldDark);
@@ -972,19 +964,11 @@ async function _buildShareImages(h,useAr){
   const padX=90;
   const bodyBot=H-110;
   const maxWidth=W-2*padX;
-  const titleSize=40;
-  const titleLineHeight=50;
-  const titleStartY=180;
-  const titleFont='500 '+titleSize+'px "Cormorant Garamond", Georgia, serif';
   const narrFontSize=22;
   const narrLineHeight=30;
   const narrFont='italic '+narrFontSize+'px "Cormorant Garamond", Georgia, serif';
   const measureCanvas=document.createElement('canvas');
   const mctx=measureCanvas.getContext('2d');
-  mctx.font=titleFont;
-  const titleItems=_wrapShareText(mctx,h.title,maxWidth);
-  const titleLineCount=titleItems.filter(x=>x.type==='line').length;
-  const titleEndY=titleStartY+titleLineCount*titleLineHeight;
   // Narrator wrap (1 or 2 lines with em-dash on first)
   mctx.font=narrFont;
   const narrMw=W-2*padX-40;
@@ -1013,10 +997,11 @@ async function _buildShareImages(h,useAr){
       if(l2)narrLines.push(l2);
     }
   }
-  const narratorStartY=titleEndY+18;
+  const numberEndY=156;
+  const narratorStartY=numberEndY+18;
   const narratorEndY=narratorStartY+narrLines.length*narrLineHeight;
-  const ornamentY=(narrLines.length?narratorEndY:titleEndY)+22;
-  const bodyTop=Math.max(310,ornamentY+36);
+  const ornamentY=(narrLines.length?narratorEndY:numberEndY)+22;
+  const bodyTop=Math.max(260,ornamentY+36);
   const text=useAr?h.arabic:h.text;
   const fontSize=useAr?44:38;
   const lineHeight=useAr?1.75:1.5;
@@ -1036,8 +1021,7 @@ async function _buildShareImages(h,useAr){
     const ctx=c.getContext('2d');
     _renderShareSlide(ctx,W,H,{
       items:slides[i],fontSize,lineHeight,padX,bodyTop,bodyBot,bodyFont,
-      titleItems,titleFont,titleStartY,titleLineHeight,ornamentY,
-      narrLines,narrFont,narratorStartY,narrLineHeight,
+      ornamentY,narrLines,narrFont,narratorStartY,narrLineHeight,
       isAr:!!useAr,palette,maxWidth
     },i+1,slides.length,h);
     const blob=await new Promise(r=>c.toBlob(r,'image/png'));
