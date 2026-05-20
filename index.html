@@ -900,16 +900,15 @@ function _renderShareSlide(ctx,W,H,s,idx,total,h){
     ctx.fillText(idx+' / '+total,W-s.padX,70);
   }
   ctx.fillStyle=p.gold;
-  ctx.font='600 56px Roboto, sans-serif';
+  ctx.font='600 44px Roboto, sans-serif';
   ctx.textAlign='left';
   ctx.fillText(h.id+'-ҲАДИС',s.padX,108);
-  ctx.fillStyle=p.dim;
-  ctx.font='italic 26px "Cormorant Garamond", Georgia, serif';
-  const titleItems=_wrapShareText(ctx,h.title,s.maxWidth);
-  let ty=188;
-  for(const t of titleItems){
+  ctx.fillStyle=p.text;
+  ctx.font=s.titleFont;
+  let ty=s.titleStartY;
+  for(const t of s.titleItems){
     if(t.type==='line'){
-      if(ty<s.bodyTop-4){ctx.fillText(t.text,s.padX,ty);ty+=32;}
+      ctx.fillText(t.text,s.padX,ty);ty+=s.titleLineHeight;
     }
   }
   ctx.fillStyle=p.text;
@@ -963,9 +962,19 @@ async function _buildShareImages(h,useAr){
     gold:'#c9a84c',goldLight:'#e8d08a',goldDark:'#8b6914'
   };
   const padX=90;
-  const bodyTop=280;
   const bodyBot=H-190;
   const maxWidth=W-2*padX;
+  const titleSize=40;
+  const titleLineHeight=50;
+  const titleStartY=180;
+  const titleFont='500 '+titleSize+'px "Cormorant Garamond", Georgia, serif';
+  const measureCanvas=document.createElement('canvas');
+  const mctx=measureCanvas.getContext('2d');
+  mctx.font=titleFont;
+  const titleItems=_wrapShareText(mctx,h.title,maxWidth);
+  const titleLineCount=titleItems.filter(x=>x.type==='line').length;
+  const titleEndY=titleStartY+titleLineCount*titleLineHeight;
+  const bodyTop=Math.max(300,titleEndY+34);
   const text=useAr?h.arabic:h.text;
   const fontSize=useAr?44:38;
   const lineHeight=useAr?1.75:1.5;
@@ -974,8 +983,6 @@ async function _buildShareImages(h,useAr){
   const bodyFont=useAr
     ?fontSize+'px "Scheherazade New", "Amiri", serif'
     :fontSize+'px Merriweather, "Cormorant Garamond", Georgia, serif';
-  const measureCanvas=document.createElement('canvas');
-  const mctx=measureCanvas.getContext('2d');
   mctx.font=bodyFont;
   if(useAr)mctx.direction='rtl';
   const items=_wrapShareText(mctx,text,maxWidth);
@@ -987,6 +994,7 @@ async function _buildShareImages(h,useAr){
     const ctx=c.getContext('2d');
     _renderShareSlide(ctx,W,H,{
       items:slides[i],fontSize,lineHeight,padX,bodyTop,bodyBot,bodyFont,
+      titleItems,titleFont,titleStartY,titleLineHeight,
       isAr:!!useAr,palette,maxWidth
     },i+1,slides.length,h);
     const blob=await new Promise(r=>c.toBlob(r,'image/png'));
