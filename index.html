@@ -901,14 +901,14 @@ function _renderShareSlide(ctx,W,H,s,idx,total,h){
   }
   ctx.fillStyle=p.gold;
   ctx.font='600 44px Roboto, sans-serif';
-  ctx.textAlign='left';
-  ctx.fillText(h.id+'-ҲАДИС',s.padX,108);
+  ctx.textAlign='center';
+  ctx.fillText(h.id+'-ҲАДИС',W/2,108);
   ctx.fillStyle=p.text;
   ctx.font=s.titleFont;
   let ty=s.titleStartY;
   for(const t of s.titleItems){
     if(t.type==='line'){
-      ctx.fillText(t.text,s.padX,ty);ty+=s.titleLineHeight;
+      ctx.fillText(t.text,W/2,ty);ty+=s.titleLineHeight;
     }
   }
   // Ornament separator under title
@@ -926,6 +926,7 @@ function _renderShareSlide(ctx,W,H,s,idx,total,h){
   ctx.beginPath();ctx.arc(ocx+15,ony,1.8,0,Math.PI*2);ctx.fill();
   ctx.fillStyle=p.text;
   ctx.font=s.bodyFont;
+  ctx.textAlign='left';
   const gapPx=s.fontSize*s.lineHeight;
   let totalH=0;
   for(const it of s.items){
