@@ -891,27 +891,11 @@ function _renderShareSlide(ctx,W,H,s,idx,total,h){
   ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
   ctx.fillStyle=p.gold;ctx.fillRect(0,0,W,3);
   ctx.textBaseline='top';ctx.direction='ltr';
-  ctx.fillStyle=p.muted;
-  ctx.font='500 22px Roboto, sans-serif';
-  ctx.textAlign='left';
-  ctx.fillText('ИМОМ НАВАВИЙ · ҚИРҚ ҲАДИС',s.padX,70);
-  if(total>1){
-    ctx.textAlign='right';ctx.fillStyle=p.dim;
-    ctx.fillText(idx+' / '+total,W-s.padX,70);
-  }
   ctx.fillStyle=p.gold;
   ctx.font='600 44px Roboto, sans-serif';
-  ctx.textAlign='left';
-  ctx.fillText(h.id+'-ҲАДИС',s.padX,108);
-  ctx.fillStyle=p.text;
-  ctx.font=s.titleFont;
-  let ty=s.titleStartY;
-  for(const t of s.titleItems){
-    if(t.type==='line'){
-      ctx.fillText(t.text,s.padX,ty);ty+=s.titleLineHeight;
-    }
-  }
-  // Ornament separator under title
+  ctx.textAlign='center';
+  ctx.fillText(h.id+'-ҲАДИС',W/2,108);
+  // Ornament separator
   const ocx=W/2, ony=s.ornamentY, side=220, gap=24;
   const g1=ctx.createLinearGradient(ocx-side-gap,ony,ocx-gap,ony);
   g1.addColorStop(0,'rgba(0,0,0,0)');g1.addColorStop(1,p.goldDark);
@@ -926,6 +910,7 @@ function _renderShareSlide(ctx,W,H,s,idx,total,h){
   ctx.beginPath();ctx.arc(ocx+15,ony,1.8,0,Math.PI*2);ctx.fill();
   ctx.fillStyle=p.text;
   ctx.font=s.bodyFont;
+  ctx.textAlign='left';
   const gapPx=s.fontSize*s.lineHeight;
   let totalH=0;
   for(const it of s.items){
@@ -945,41 +930,12 @@ function _renderShareSlide(ctx,W,H,s,idx,total,h){
       else y+=gapPx*0.4;
     }
   }
-  ctx.globalAlpha=0.35;
-  ctx.fillStyle=p.gold;
-  ctx.fillRect(s.padX,H-130,W-2*s.padX,1);
-  ctx.globalAlpha=1;
-  if(h.narrator){
+  // Slide index (centered at bottom)
+  if(total>1){
+    ctx.direction='ltr';ctx.textAlign='center';ctx.textBaseline='top';
     ctx.fillStyle=p.dim;
-    ctx.font='italic 24px "Cormorant Garamond", Georgia, serif';
-    ctx.textAlign='center';ctx.textBaseline='top';
-    const mw=W-2*s.padX-40;
-    const oneLine='— '+h.narrator;
-    if(ctx.measureText(oneLine).width<=mw){
-      ctx.fillText(oneLine,W/2,H-85);
-    }else{
-      const words=h.narrator.split(/\s+/);
-      let l1='',l2='';
-      for(const w of words){
-        const test=l1?l1+' '+w:w;
-        if(ctx.measureText('— '+test).width<=mw)l1=test;
-        else{
-          if(!l1){l1=w;continue;}
-          const t2=l2?l2+' '+w:w;
-          if(ctx.measureText(t2).width<=mw)l2=t2;
-          else{
-            while(l2.length>4&&ctx.measureText(l2+'…').width>mw)l2=l2.slice(0,-1);
-            l2=l2+'…';break;
-          }
-        }
-      }
-      if(l2){
-        ctx.fillText('— '+l1,W/2,H-100);
-        ctx.fillText(l2,W/2,H-68);
-      }else{
-        ctx.fillText('— '+l1,W/2,H-85);
-      }
-    }
+    ctx.font='400 18px Roboto, sans-serif';
+    ctx.fillText(idx+' / '+total,W/2,H-50);
   }
 }
 async function _buildShareImages(h,useAr){
@@ -995,20 +951,12 @@ async function _buildShareImages(h,useAr){
     gold:'#c9a84c',goldLight:'#e8d08a',goldDark:'#8b6914'
   };
   const padX=90;
-  const bodyBot=H-190;
+  const bodyBot=H-110;
   const maxWidth=W-2*padX;
-  const titleSize=40;
-  const titleLineHeight=50;
-  const titleStartY=180;
-  const titleFont='500 '+titleSize+'px "Cormorant Garamond", Georgia, serif';
   const measureCanvas=document.createElement('canvas');
   const mctx=measureCanvas.getContext('2d');
-  mctx.font=titleFont;
-  const titleItems=_wrapShareText(mctx,h.title,maxWidth);
-  const titleLineCount=titleItems.filter(x=>x.type==='line').length;
-  const titleEndY=titleStartY+titleLineCount*titleLineHeight;
-  const ornamentY=titleEndY+28;
-  const bodyTop=Math.max(310,ornamentY+44);
+  const ornamentY=180;
+  const bodyTop=ornamentY+40;
   const text=useAr?h.arabic:h.text;
   const fontSize=useAr?44:38;
   const lineHeight=useAr?1.75:1.5;
@@ -1028,8 +976,7 @@ async function _buildShareImages(h,useAr){
     const ctx=c.getContext('2d');
     _renderShareSlide(ctx,W,H,{
       items:slides[i],fontSize,lineHeight,padX,bodyTop,bodyBot,bodyFont,
-      titleItems,titleFont,titleStartY,titleLineHeight,ornamentY,
-      isAr:!!useAr,palette,maxWidth
+      ornamentY,isAr:!!useAr,palette,maxWidth
     },i+1,slides.length,h);
     const blob=await new Promise(r=>c.toBlob(r,'image/png'));
     if(blob)blobs.push(blob);
