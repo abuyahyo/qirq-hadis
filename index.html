@@ -1116,6 +1116,14 @@ if(!gs('lang')&&gs('showArabic')==='1')ss('lang','ar');
 apTh();applyFont();buildGrid('');
 applyRoute();
 if('serviceWorker' in navigator){
+  if(navigator.serviceWorker.controller){
+    let _swReloading=false;
+    navigator.serviceWorker.addEventListener('controllerchange',function(){
+      if(_swReloading)return;
+      _swReloading=true;
+      window.location.reload();
+    });
+  }
   window.addEventListener('load',function(){
     navigator.serviceWorker.register('./sw.js').catch(function(){});
   });
