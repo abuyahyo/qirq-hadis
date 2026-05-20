@@ -930,15 +930,12 @@ function _renderShareSlide(ctx,W,H,s,idx,total,h){
       else y+=gapPx*0.4;
     }
   }
-  // Bottom brand + slide index (centered)
-  ctx.direction='ltr';ctx.textAlign='center';ctx.textBaseline='top';
-  ctx.fillStyle=p.muted;
-  ctx.font='500 22px Roboto, sans-serif';
-  ctx.fillText('ИМОМ НАВАВИЙ · ҚИРҚ ҲАДИС',W/2,H-70);
+  // Slide index (centered at bottom)
   if(total>1){
+    ctx.direction='ltr';ctx.textAlign='center';ctx.textBaseline='top';
     ctx.fillStyle=p.dim;
     ctx.font='400 18px Roboto, sans-serif';
-    ctx.fillText(idx+' / '+total,W/2,H-38);
+    ctx.fillText(idx+' / '+total,W/2,H-50);
   }
 }
 async function _buildShareImages(h,useAr){
