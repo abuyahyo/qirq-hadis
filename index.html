@@ -1002,7 +1002,7 @@ async function shareHadis(){
     const blobs=await _buildShareImages(h,useAr);
     if(!blobs.length)throw new Error('No images generated');
     const files=blobs.map((b,i)=>new File([b],'qirq-hadis-'+h.id+'-'+(i+1)+'.png',{type:'image/png'}));
-    const shareData={files,title:h.id+'-ҳадис: '+h.title,text:h.id+'-ҳадис: '+h.title+' — Имом Нававий, «Қирқ ҳадис»'};
+    const shareData={files};
     if(navigator.canShare&&navigator.canShare({files})){
       try{
         await navigator.share(shareData);
