@@ -911,6 +911,19 @@ function _renderShareSlide(ctx,W,H,s,idx,total,h){
       ctx.fillText(t.text,s.padX,ty);ty+=s.titleLineHeight;
     }
   }
+  // Ornament separator under title
+  const ocx=W/2, ony=s.ornamentY, side=220, gap=24;
+  const g1=ctx.createLinearGradient(ocx-side-gap,ony,ocx-gap,ony);
+  g1.addColorStop(0,'rgba(0,0,0,0)');g1.addColorStop(1,p.goldDark);
+  ctx.fillStyle=g1;ctx.fillRect(ocx-side-gap,ony,side,1);
+  const g2=ctx.createLinearGradient(ocx+gap,ony,ocx+side+gap,ony);
+  g2.addColorStop(0,p.goldDark);g2.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=g2;ctx.fillRect(ocx+gap,ony,side,1);
+  ctx.fillStyle=p.gold;
+  ctx.beginPath();ctx.moveTo(ocx,ony-6);ctx.lineTo(ocx+6,ony);ctx.lineTo(ocx,ony+6);ctx.lineTo(ocx-6,ony);ctx.closePath();ctx.fill();
+  ctx.fillStyle=p.goldDark;
+  ctx.beginPath();ctx.arc(ocx-15,ony,1.8,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(ocx+15,ony,1.8,0,Math.PI*2);ctx.fill();
   ctx.fillStyle=p.text;
   ctx.font=s.bodyFont;
   const gapPx=s.fontSize*s.lineHeight;
@@ -934,20 +947,40 @@ function _renderShareSlide(ctx,W,H,s,idx,total,h){
   }
   ctx.globalAlpha=0.35;
   ctx.fillStyle=p.gold;
-  ctx.fillRect(s.padX,H-150,W-2*s.padX,1);
+  ctx.fillRect(s.padX,H-130,W-2*s.padX,1);
   ctx.globalAlpha=1;
   if(h.narrator){
     ctx.fillStyle=p.dim;
     ctx.font='italic 24px "Cormorant Garamond", Georgia, serif';
     ctx.textAlign='center';ctx.textBaseline='top';
-    let narr=h.narrator,mw=W-2*s.padX;
-    while(ctx.measureText('— '+narr).width>mw&&narr.length>10){narr=narr.slice(0,-2)+'…';}
-    ctx.fillText('— '+narr,W/2,H-115);
+    const mw=W-2*s.padX-40;
+    const oneLine='— '+h.narrator;
+    if(ctx.measureText(oneLine).width<=mw){
+      ctx.fillText(oneLine,W/2,H-85);
+    }else{
+      const words=h.narrator.split(/\s+/);
+      let l1='',l2='';
+      for(const w of words){
+        const test=l1?l1+' '+w:w;
+        if(ctx.measureText('— '+test).width<=mw)l1=test;
+        else{
+          if(!l1){l1=w;continue;}
+          const t2=l2?l2+' '+w:w;
+          if(ctx.measureText(t2).width<=mw)l2=t2;
+          else{
+            while(l2.length>4&&ctx.measureText(l2+'…').width>mw)l2=l2.slice(0,-1);
+            l2=l2+'…';break;
+          }
+        }
+      }
+      if(l2){
+        ctx.fillText('— '+l1,W/2,H-100);
+        ctx.fillText(l2,W/2,H-68);
+      }else{
+        ctx.fillText('— '+l1,W/2,H-85);
+      }
+    }
   }
-  ctx.fillStyle=p.gold;
-  ctx.font='500 18px Roboto, sans-serif';
-  ctx.textAlign='center';
-  ctx.fillText('ҚИРҚ ҲАДИС',W/2,H-62);
 }
 async function _buildShareImages(h,useAr){
   const W=1080,H=1080;
@@ -974,7 +1007,8 @@ async function _buildShareImages(h,useAr){
   const titleItems=_wrapShareText(mctx,h.title,maxWidth);
   const titleLineCount=titleItems.filter(x=>x.type==='line').length;
   const titleEndY=titleStartY+titleLineCount*titleLineHeight;
-  const bodyTop=Math.max(300,titleEndY+34);
+  const ornamentY=titleEndY+28;
+  const bodyTop=Math.max(310,ornamentY+44);
   const text=useAr?h.arabic:h.text;
   const fontSize=useAr?44:38;
   const lineHeight=useAr?1.75:1.5;
@@ -994,7 +1028,7 @@ async function _buildShareImages(h,useAr){
     const ctx=c.getContext('2d');
     _renderShareSlide(ctx,W,H,{
       items:slides[i],fontSize,lineHeight,padX,bodyTop,bodyBot,bodyFont,
-      titleItems,titleFont,titleStartY,titleLineHeight,
+      titleItems,titleFont,titleStartY,titleLineHeight,ornamentY,
       isAr:!!useAr,palette,maxWidth
     },i+1,slides.length,h);
     const blob=await new Promise(r=>c.toBlob(r,'image/png'));
