@@ -11,7 +11,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 <title>Имом Нававийнинг «Қирқ ҳадис» тўплами</title>
-<link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Amiri:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Amiri:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Roboto:wght@400;500&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
 :root{--gold:#c9a84c;--gold-light:#e8d08a;--gold-dark:#8b6914;--bg:#0d0b07;--surface:#1c1710;--surface2:#2d2718;--surface3:#221d11;--border:#3a3020;--border2:#4a4030;--text:#e8dcc8;--text-dim:#9a8f78;--text-muted:#5a5040;--izoh:#b8d4a8;--izoh-bg:rgba(74,110,64,0.1);--izoh-border:#4a6e40}
 .light{--bg:#f5f0e8;--surface:#ede6d6;--surface2:#e0d8c4;--surface3:#d8cfba;--border:#c8bea8;--border2:#b8ae98;--text:#2a2218;--text-dim:#5a5040;--text-muted:#8a8070;--gold:#8b6914;--gold-light:#6b5010;--gold-dark:#5a4010;--izoh:#2a4a20;--izoh-bg:rgba(74,110,64,0.08);--izoh-border:#4a6e40}
@@ -223,6 +223,9 @@ body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;min-
 <button class="hadis-tool-btn" id="hadisCopyBtn" onclick="App.copyHadis()" title="Матнни нусха олиш" aria-label="Ҳадис матнини нусха олиш">
 <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
 <span>Нусха</span></button>
+<button class="hadis-tool-btn" id="hadisShareBtn" onclick="App.shareHadis()" title="Расм қилиб улашиш" aria-label="Ҳадисни расм қилиб улашиш">
+<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+<span>Улашиш</span></button>
 </div>
 </div>
 
@@ -815,12 +818,234 @@ function copyHadis(){
     navigator.clipboard.writeText(txt).then(done).catch(()=>{fallbackCopy(txt);done();});
   }else{fallbackCopy(txt);done();}
 }
+function _wrapShareText(ctx,text,maxWidth){
+  const paragraphs=String(text||'').split('\n');
+  const out=[];
+  for(let p=0;p<paragraphs.length;p++){
+    const para=paragraphs[p].trim();
+    if(!para){
+      if(out.length&&out[out.length-1].type!=='break')out.push({type:'break'});
+      continue;
+    }
+    const words=para.split(/\s+/);
+    let cur='';
+    for(const w of words){
+      const test=cur?cur+' '+w:w;
+      if(ctx.measureText(test).width<=maxWidth){cur=test;}
+      else{
+        if(cur)out.push({type:'line',text:cur});
+        if(ctx.measureText(w).width>maxWidth){
+          let chunk='';
+          for(const ch of w){
+            const t=chunk+ch;
+            if(ctx.measureText(t).width<=maxWidth){chunk=t;}
+            else{if(chunk)out.push({type:'line',text:chunk});chunk=ch;}
+          }
+          cur=chunk;
+        }else{cur=w;}
+      }
+    }
+    if(cur)out.push({type:'line',text:cur});
+    if(p<paragraphs.length-1)out.push({type:'break'});
+  }
+  return out;
+}
+function _splitShareSlides(items,maxLines){
+  if(maxLines<3)maxLines=3;
+  const slides=[];
+  let cur=[];
+  const lnCount=arr=>arr.filter(x=>x.type==='line').length;
+  let i=0;
+  while(i<items.length){
+    cur.push(items[i]);i++;
+    if(lnCount(cur)>=maxLines){
+      let splitAt=-1;
+      for(let j=cur.length-1;j>=Math.max(0,cur.length-3);j--){
+        if(cur[j].type==='break'){splitAt=j;break;}
+      }
+      if(splitAt<0){
+        for(let j=cur.length-1;j>=Math.max(0,cur.length-2);j--){
+          const it=cur[j];
+          if(it.type==='line'&&/[.!?…»"]\s*$/.test(it.text)){splitAt=j+1;break;}
+        }
+      }
+      if(splitAt<0)splitAt=cur.length;
+      let s=cur.slice(0,splitAt);
+      while(s.length&&s[s.length-1].type==='break')s.pop();
+      if(s.length)slides.push(s);
+      cur=cur.slice(splitAt);
+      while(cur.length&&cur[0].type==='break')cur.shift();
+    }
+  }
+  if(cur.length){
+    while(cur.length&&cur[cur.length-1].type==='break')cur.pop();
+    if(cur.length)slides.push(cur);
+  }
+  return slides.length?slides:[[]];
+}
+function _renderShareSlide(ctx,W,H,s,idx,total,h){
+  const p=s.palette;
+  const grad=ctx.createLinearGradient(0,0,0,H);
+  grad.addColorStop(0,p.bgTop);
+  grad.addColorStop(1,p.bgBot);
+  ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
+  ctx.fillStyle=p.gold;ctx.fillRect(0,0,W,3);
+  ctx.textBaseline='top';ctx.direction='ltr';
+  ctx.fillStyle=p.muted;
+  ctx.font='500 22px Roboto, sans-serif';
+  ctx.textAlign='left';
+  ctx.fillText('ИМОМ НАВАВИЙ · ҚИРҚ ҲАДИС',s.padX,70);
+  if(total>1){
+    ctx.textAlign='right';ctx.fillStyle=p.dim;
+    ctx.fillText(idx+' / '+total,W-s.padX,70);
+  }
+  ctx.fillStyle=p.gold;
+  ctx.font='600 56px Roboto, sans-serif';
+  ctx.textAlign='left';
+  ctx.fillText(h.id+'-ҲАДИС',s.padX,108);
+  ctx.fillStyle=p.dim;
+  ctx.font='italic 26px "Cormorant Garamond", Georgia, serif';
+  const titleItems=_wrapShareText(ctx,h.title,s.maxWidth);
+  let ty=188;
+  for(const t of titleItems){
+    if(t.type==='line'){
+      if(ty<s.bodyTop-4){ctx.fillText(t.text,s.padX,ty);ty+=32;}
+    }
+  }
+  ctx.fillStyle=p.text;
+  ctx.font=s.bodyFont;
+  const gapPx=s.fontSize*s.lineHeight;
+  let totalH=0;
+  for(const it of s.items){
+    if(it.type==='line')totalH+=gapPx;else totalH+=gapPx*0.4;
+  }
+  let y=s.bodyTop+Math.max(0,(s.bodyBot-s.bodyTop-totalH)/2);
+  if(s.isAr){
+    ctx.direction='rtl';ctx.textAlign='right';
+    for(const it of s.items){
+      if(it.type==='line'){ctx.fillText(it.text,W-s.padX,y);y+=gapPx;}
+      else y+=gapPx*0.4;
+    }
+    ctx.direction='ltr';ctx.textAlign='left';
+  }else{
+    for(const it of s.items){
+      if(it.type==='line'){ctx.fillText(it.text,s.padX,y);y+=gapPx;}
+      else y+=gapPx*0.4;
+    }
+  }
+  ctx.globalAlpha=0.35;
+  ctx.fillStyle=p.gold;
+  ctx.fillRect(s.padX,H-150,W-2*s.padX,1);
+  ctx.globalAlpha=1;
+  if(h.narrator){
+    ctx.fillStyle=p.dim;
+    ctx.font='italic 24px "Cormorant Garamond", Georgia, serif';
+    ctx.textAlign='center';ctx.textBaseline='top';
+    let narr=h.narrator,mw=W-2*s.padX;
+    while(ctx.measureText('— '+narr).width>mw&&narr.length>10){narr=narr.slice(0,-2)+'…';}
+    ctx.fillText('— '+narr,W/2,H-115);
+  }
+  ctx.fillStyle=p.gold;
+  ctx.font='500 18px Roboto, sans-serif';
+  ctx.textAlign='center';
+  ctx.fillText('ҚИРҚ ҲАДИС',W/2,H-62);
+}
+async function _buildShareImages(h,useAr){
+  const W=1080,H=1080;
+  const isLight=document.documentElement.classList.contains('light');
+  const palette=isLight?{
+    bgTop:'#f5f0e8',bgBot:'#ede6d6',
+    text:'#2a2218',dim:'#5a5040',muted:'#8a8070',
+    gold:'#8b6914',goldLight:'#6b5010',goldDark:'#5a4010'
+  }:{
+    bgTop:'#1c1710',bgBot:'#0d0b07',
+    text:'#e8dcc8',dim:'#9a8f78',muted:'#5a5040',
+    gold:'#c9a84c',goldLight:'#e8d08a',goldDark:'#8b6914'
+  };
+  const padX=90;
+  const bodyTop=280;
+  const bodyBot=H-190;
+  const maxWidth=W-2*padX;
+  const text=useAr?h.arabic:h.text;
+  const fontSize=useAr?44:38;
+  const lineHeight=useAr?1.75:1.5;
+  const gapPx=fontSize*lineHeight;
+  const maxLines=Math.max(3,Math.floor((bodyBot-bodyTop)/gapPx));
+  const bodyFont=useAr
+    ?fontSize+'px "Scheherazade New", "Amiri", serif'
+    :fontSize+'px Merriweather, "Cormorant Garamond", Georgia, serif';
+  const measureCanvas=document.createElement('canvas');
+  const mctx=measureCanvas.getContext('2d');
+  mctx.font=bodyFont;
+  if(useAr)mctx.direction='rtl';
+  const items=_wrapShareText(mctx,text,maxWidth);
+  const slides=_splitShareSlides(items,maxLines);
+  const blobs=[];
+  for(let i=0;i<slides.length;i++){
+    const c=document.createElement('canvas');
+    c.width=W;c.height=H;
+    const ctx=c.getContext('2d');
+    _renderShareSlide(ctx,W,H,{
+      items:slides[i],fontSize,lineHeight,padX,bodyTop,bodyBot,bodyFont,
+      isAr:!!useAr,palette,maxWidth
+    },i+1,slides.length,h);
+    const blob=await new Promise(r=>c.toBlob(r,'image/png'));
+    if(blob)blobs.push(blob);
+  }
+  return blobs;
+}
+async function shareHadis(){
+  if(!curN)return;
+  const h=QD.find(x=>x.id===curN);
+  if(!h)return;
+  const btn=document.getElementById('hadisShareBtn');
+  if(!btn||btn.classList.contains('disabled'))return;
+  const lbl=btn.querySelector('span');
+  const orig=lbl?lbl.textContent:'Улашиш';
+  const status=t=>{if(lbl)lbl.textContent=t;};
+  const reset=()=>{if(lbl)lbl.textContent=orig;btn.classList.remove('copied','disabled');};
+  btn.classList.add('disabled');
+  status('⏳ Тайёрланмоқда…');
+  try{
+    if(document.fonts&&document.fonts.ready){try{await document.fonts.ready;}catch(_){}}
+    const lang=gs('lang')||'uz';
+    const useAr=lang==='ar'&&!!h.arabic;
+    const blobs=await _buildShareImages(h,useAr);
+    if(!blobs.length)throw new Error('No images generated');
+    const files=blobs.map((b,i)=>new File([b],'qirq-hadis-'+h.id+'-'+(i+1)+'.png',{type:'image/png'}));
+    const shareData={files,title:h.id+'-ҳадис: '+h.title,text:h.id+'-ҳадис: '+h.title+' — Имом Нававий, «Қирқ ҳадис»'};
+    if(navigator.canShare&&navigator.canShare({files})){
+      try{
+        await navigator.share(shareData);
+        btn.classList.add('copied');status('✓ Юборилди');
+      }catch(e){
+        if(e&&e.name==='AbortError'){reset();return;}
+        throw e;
+      }
+    }else{
+      for(const f of files){
+        const url=URL.createObjectURL(f);
+        const a=document.createElement('a');
+        a.href=url;a.download=f.name;
+        document.body.appendChild(a);a.click();document.body.removeChild(a);
+        setTimeout(()=>URL.revokeObjectURL(url),300);
+      }
+      btn.classList.add('copied');status('✓ Юкланди');
+    }
+    setTimeout(reset,1800);
+  }catch(e){
+    console.error('shareHadis failed:',e);
+    status('✗ Хато');
+    setTimeout(reset,1800);
+  }
+}
 const App={
   open:openHadis,
   goHome:function(){showPanel('home');curN=0;document.title='Имом Нававийнинг «Қирқ ҳадис» тўплами';setHash('');window.scrollTo(0,0);},
   toggleTheme:function(){th=th==='dark'?'light':'dark';apTh();},
   adjustFont:adjustFont,
   copyHadis:copyHadis,
+  shareHadis:shareHadis,
   openMuqaddima:function(skipRoute){
     document.title='Муқаддима | Имом Нававий — Қирқ ҳадис';
     showPanel('muqaddima');
