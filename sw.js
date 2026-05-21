@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'qirq-v1';
+const CACHE_VERSION = 'qirq-v2';
 const ASSETS = [
   './manifest.json',
   './apple-touch-icon.png',
@@ -42,13 +42,17 @@ self.addEventListener('fetch', e => {
     return;
   }
 
+  // Stale-while-revalidate: serve cache fast, fetch fresh in background
   e.respondWith(
-    caches.match(req).then(cached => cached || fetch(req).then(res => {
-      if (res && res.ok && res.type === 'basic') {
-        const copy = res.clone();
-        caches.open(CACHE_VERSION).then(c => c.put(req, copy)).catch(() => {});
-      }
-      return res;
-    }))
+    caches.match(req).then(cached => {
+      const network = fetch(req).then(res => {
+        if (res && res.ok && res.type === 'basic') {
+          const copy = res.clone();
+          caches.open(CACHE_VERSION).then(c => c.put(req, copy)).catch(() => {});
+        }
+        return res;
+      }).catch(() => cached);
+      return cached || network;
+    })
   );
 });
