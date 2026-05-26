@@ -883,34 +883,60 @@ function _splitShareSlides(items,maxLines){
   }
   return slides.length?slides:[[]];
 }
+function _roundRect(ctx,x,y,w,hh,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+hh,r);
+  ctx.arcTo(x+w,y+hh,x,y+hh,r);
+  ctx.arcTo(x,y+hh,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
 function _renderShareSlide(ctx,W,H,s,idx,total,h){
   const p=s.palette;
-  const grad=ctx.createLinearGradient(0,0,0,H);
+  // Diagonal background gradient
+  const grad=ctx.createLinearGradient(0,0,W*0.35,H);
   grad.addColorStop(0,p.bgTop);
   grad.addColorStop(1,p.bgBot);
   ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
-  ctx.fillStyle=p.gold;ctx.fillRect(0,0,W,3);
+  // Soft glow near top
+  const glow=ctx.createRadialGradient(W*0.42,H*0.12,30,W*0.42,H*0.12,W*0.85);
+  glow.addColorStop(0,p.glow);
+  glow.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
+
   ctx.textBaseline='top';ctx.direction='ltr';
-  ctx.fillStyle=p.gold;
-  ctx.font='600 44px Roboto, sans-serif';
-  ctx.textAlign='center';
-  ctx.fillText(h.id+'-ҲАДИС',W/2,108);
-  // Ornament separator
-  const ocx=W/2, ony=s.ornamentY, side=220, gap=24;
-  const g1=ctx.createLinearGradient(ocx-side-gap,ony,ocx-gap,ony);
-  g1.addColorStop(0,'rgba(0,0,0,0)');g1.addColorStop(1,p.goldDark);
-  ctx.fillStyle=g1;ctx.fillRect(ocx-side-gap,ony,side,1);
-  const g2=ctx.createLinearGradient(ocx+gap,ony,ocx+side+gap,ony);
-  g2.addColorStop(0,p.goldDark);g2.addColorStop(1,'rgba(0,0,0,0)');
-  ctx.fillStyle=g2;ctx.fillRect(ocx+gap,ony,side,1);
-  ctx.fillStyle=p.gold;
-  ctx.beginPath();ctx.moveTo(ocx,ony-6);ctx.lineTo(ocx+6,ony);ctx.lineTo(ocx,ony+6);ctx.lineTo(ocx-6,ony);ctx.closePath();ctx.fill();
-  ctx.fillStyle=p.goldDark;
-  ctx.beginPath();ctx.arc(ocx-15,ony,1.8,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc(ocx+15,ony,1.8,0,Math.PI*2);ctx.fill();
+
+  // Chip (collection name) top-left
+  ctx.font='600 28px Roboto, sans-serif';
+  const chipPadX=28, chipPadY=16, chipX=s.padX, chipY=72;
+  let ct=s.chipText||'';
+  const chipMaxW=W-2*s.padX-2*chipPadX;
+  if(ctx.measureText(ct).width>chipMaxW){
+    while(ct.length>4 && ctx.measureText(ct+'…').width>chipMaxW) ct=ct.slice(0,-1);
+    ct=ct.replace(/\s+$/,'')+'…';
+  }
+  const tw=ctx.measureText(ct).width;
+  const chipH=28+2*chipPadY, chipW=tw+2*chipPadX;
+  ctx.fillStyle=p.chipBg;
+  _roundRect(ctx,chipX,chipY,chipW,chipH,chipH/2);
+  ctx.fill();
+  ctx.fillStyle=p.chipText;
+  ctx.textBaseline='middle';
+  ctx.fillText(ct,chipX+chipPadX,chipY+chipH/2+1);
+  ctx.textBaseline='top';
+
+  // Heading (hadith number) — title size
+  if(s.heading){
+    ctx.fillStyle=p.text;
+    ctx.font='700 56px Roboto, sans-serif';
+    ctx.textAlign='left';
+    ctx.fillText(s.heading,s.padX,chipY+chipH+56);
+  }
+
+  // Body text (left-aligned, vertically centered)
   ctx.fillStyle=p.text;
   ctx.font=s.bodyFont;
-  ctx.textAlign='left';
   const gapPx=s.fontSize*s.lineHeight;
   let totalH=0;
   for(const it of s.items){
@@ -925,50 +951,58 @@ function _renderShareSlide(ctx,W,H,s,idx,total,h){
     }
     ctx.direction='ltr';ctx.textAlign='left';
   }else{
+    ctx.textAlign='left';
     for(const it of s.items){
       if(it.type==='line'){ctx.fillText(it.text,s.padX,y);y+=gapPx;}
       else y+=gapPx*0.4;
     }
   }
-  // Slide index (centered at bottom)
+
+  // Bottom bar: slide index (left) + URL (center)
+  ctx.textBaseline='alphabetic';
+  ctx.fillStyle=p.dim;
   if(total>1){
-    ctx.direction='ltr';ctx.textAlign='center';ctx.textBaseline='top';
-    ctx.fillStyle=p.dim;
-    ctx.font='400 18px Roboto, sans-serif';
-    ctx.fillText(idx+' / '+total,W/2,H-50);
+    ctx.font='700 26px Roboto, sans-serif';
+    ctx.textAlign='left';
+    ctx.fillText(idx+' / '+total,s.padX,H-58);
   }
+  if(s.url){
+    ctx.font='500 26px Roboto, sans-serif';
+    ctx.textAlign='center';
+    ctx.fillText(s.url,W/2,H-58);
+  }
+  ctx.textAlign='left';ctx.textBaseline='top';
 }
-async function _buildShareImages(h,useAr){
+const SHARE_PALETTE={
+  bgTop:'#10544e',bgBot:'#052c2a',glow:'rgba(100,230,210,0.10)',
+  chipBg:'rgba(255,255,255,0.14)',chipText:'#ffffff',
+  text:'#f2f7f4',dim:'rgba(255,255,255,0.55)'
+};
+const SHARE_URL='abuyahyo.github.io/qirq-hadis';
+async function _buildShareImages(h,useAr,paletteOverride){
   const W=1080,H=1080;
-  const isLight=document.documentElement.classList.contains('light');
-  const palette=isLight?{
-    bgTop:'#f5f0e8',bgBot:'#ede6d6',
-    text:'#2a2218',dim:'#5a5040',muted:'#8a8070',
-    gold:'#8b6914',goldLight:'#6b5010',goldDark:'#5a4010'
-  }:{
-    bgTop:'#1c1710',bgBot:'#0d0b07',
-    text:'#e8dcc8',dim:'#9a8f78',muted:'#5a5040',
-    gold:'#c9a84c',goldLight:'#e8d08a',goldDark:'#8b6914'
-  };
-  const padX=90;
+  const palette=paletteOverride||SHARE_PALETTE;
+  const padX=80;
+  const bodyTop=320;
   const bodyBot=H-110;
   const maxWidth=W-2*padX;
   const measureCanvas=document.createElement('canvas');
   const mctx=measureCanvas.getContext('2d');
-  const ornamentY=180;
-  const bodyTop=ornamentY+40;
   const text=useAr?h.arabic:h.text;
-  const fontSize=useAr?44:38;
-  const lineHeight=useAr?1.75:1.5;
+  const fontSize=useAr?46:40;
+  const lineHeight=useAr?1.7:1.45;
   const gapPx=fontSize*lineHeight;
   const maxLines=Math.max(3,Math.floor((bodyBot-bodyTop)/gapPx));
   const bodyFont=useAr
     ?fontSize+'px "Scheherazade New", "Amiri", serif'
-    :fontSize+'px Merriweather, "Cormorant Garamond", Georgia, serif';
+    :'600 '+fontSize+'px Roboto, sans-serif';
   mctx.font=bodyFont;
   if(useAr)mctx.direction='rtl';
   const items=_wrapShareText(mctx,text,maxWidth);
   const slides=_splitShareSlides(items,maxLines);
+  const chipText='Имом Нававийнинг «Қирқ ҳадис» тўплами';
+  const heading=h.id+'-ҲАДИС';
+  const url=SHARE_URL+'#h/'+h.id;
   const blobs=[];
   for(let i=0;i<slides.length;i++){
     const c=document.createElement('canvas');
@@ -976,7 +1010,7 @@ async function _buildShareImages(h,useAr){
     const ctx=c.getContext('2d');
     _renderShareSlide(ctx,W,H,{
       items:slides[i],fontSize,lineHeight,padX,bodyTop,bodyBot,bodyFont,
-      ornamentY,isAr:!!useAr,palette,maxWidth
+      isAr:!!useAr,palette,maxWidth,chipText,heading,url
     },i+1,slides.length,h);
     const blob=await new Promise(r=>c.toBlob(r,'image/png'));
     if(blob)blobs.push(blob);
@@ -997,9 +1031,7 @@ async function shareHadis(){
   status('⏳ Тайёрланмоқда…');
   try{
     if(document.fonts&&document.fonts.ready){try{await document.fonts.ready;}catch(_){}}
-    const lang=gs('lang')||'uz';
-    const useAr=lang==='ar'&&!!h.arabic;
-    const blobs=await _buildShareImages(h,useAr);
+    const blobs=await _buildShareImages(h,false);
     if(!blobs.length)throw new Error('No images generated');
     const files=blobs.map((b,i)=>new File([b],'qirq-hadis-'+h.id+'-'+(i+1)+'.png',{type:'image/png'}));
     const shareData={files};
