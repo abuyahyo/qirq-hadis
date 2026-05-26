@@ -992,7 +992,7 @@ async function _buildShareImages(h,useAr,paletteOverride){
   if(useAr)mctx.direction='rtl';
   const items=_wrapShareText(mctx,text,maxWidth);
   const slides=_splitShareSlides(items,maxLines);
-  const chipText=h.narrator||(h.id+'-ҳадис');
+  const chipText=h.id+'-ҲАДИС';
   const url=SHARE_URL+'#h/'+h.id;
   const blobs=[];
   for(let i=0;i<slides.length;i++){
@@ -1022,9 +1022,7 @@ async function shareHadis(){
   status('⏳ Тайёрланмоқда…');
   try{
     if(document.fonts&&document.fonts.ready){try{await document.fonts.ready;}catch(_){}}
-    const lang=gs('lang')||'uz';
-    const useAr=lang==='ar'&&!!h.arabic;
-    const blobs=await _buildShareImages(h,useAr);
+    const blobs=await _buildShareImages(h,false);
     if(!blobs.length)throw new Error('No images generated');
     const files=blobs.map((b,i)=>new File([b],'qirq-hadis-'+h.id+'-'+(i+1)+'.png',{type:'image/png'}));
     const shareData={files};
