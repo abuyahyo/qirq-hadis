@@ -934,15 +934,11 @@ function _renderShareSlide(ctx,W,H,s,idx,total,h){
     ctx.fillText(s.heading,s.padX,chipY+chipH+56);
   }
 
-  // Body text (left-aligned, vertically centered)
+  // Body text (left-aligned, top-aligned under heading)
   ctx.fillStyle=p.text;
   ctx.font=s.bodyFont;
   const gapPx=s.fontSize*s.lineHeight;
-  let totalH=0;
-  for(const it of s.items){
-    if(it.type==='line')totalH+=gapPx;else totalH+=gapPx*0.4;
-  }
-  let y=s.bodyTop+Math.max(0,(s.bodyBot-s.bodyTop-totalH)/2);
+  let y=s.bodyTop;
   if(s.isAr){
     ctx.direction='rtl';ctx.textAlign='right';
     for(const it of s.items){
@@ -958,7 +954,7 @@ function _renderShareSlide(ctx,W,H,s,idx,total,h){
     }
   }
 
-  // Bottom bar: slide index (left) + URL (center)
+  // Bottom bar: slide index (left) + URL (right)
   ctx.textBaseline='alphabetic';
   ctx.fillStyle=p.dim;
   if(total>1){
@@ -968,8 +964,8 @@ function _renderShareSlide(ctx,W,H,s,idx,total,h){
   }
   if(s.url){
     ctx.font='500 26px Roboto, sans-serif';
-    ctx.textAlign='center';
-    ctx.fillText(s.url,W/2,H-58);
+    ctx.textAlign='right';
+    ctx.fillText(s.url,W-s.padX,H-58);
   }
   ctx.textAlign='left';ctx.textBaseline='top';
 }
