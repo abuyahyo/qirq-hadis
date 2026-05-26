@@ -907,7 +907,7 @@ function _renderShareSlide(ctx,W,H,s,idx,total,h){
 
   ctx.textBaseline='top';ctx.direction='ltr';
 
-  // Chip (narrator) top-left
+  // Chip (collection name) top-left
   ctx.font='600 28px Roboto, sans-serif';
   const chipPadX=28, chipPadY=16, chipX=s.padX, chipY=72;
   let ct=s.chipText||'';
@@ -925,6 +925,14 @@ function _renderShareSlide(ctx,W,H,s,idx,total,h){
   ctx.textBaseline='middle';
   ctx.fillText(ct,chipX+chipPadX,chipY+chipH/2+1);
   ctx.textBaseline='top';
+
+  // Heading (hadith number) — title size
+  if(s.heading){
+    ctx.fillStyle=p.text;
+    ctx.font='700 56px Roboto, sans-serif';
+    ctx.textAlign='left';
+    ctx.fillText(s.heading,s.padX,chipY+chipH+28);
+  }
 
   // Body text (left-aligned, vertically centered)
   ctx.fillStyle=p.text;
@@ -975,7 +983,7 @@ async function _buildShareImages(h,useAr,paletteOverride){
   const W=1080,H=1080;
   const palette=paletteOverride||SHARE_PALETTE;
   const padX=80;
-  const bodyTop=210;
+  const bodyTop=290;
   const bodyBot=H-110;
   const maxWidth=W-2*padX;
   const measureCanvas=document.createElement('canvas');
@@ -992,7 +1000,8 @@ async function _buildShareImages(h,useAr,paletteOverride){
   if(useAr)mctx.direction='rtl';
   const items=_wrapShareText(mctx,text,maxWidth);
   const slides=_splitShareSlides(items,maxLines);
-  const chipText=h.id+'-ҲАДИС';
+  const chipText='Имом Нававийнинг «Қирқ ҳадис» тўплами';
+  const heading=h.id+'-ҲАДИС';
   const url=SHARE_URL+'#h/'+h.id;
   const blobs=[];
   for(let i=0;i<slides.length;i++){
@@ -1001,7 +1010,7 @@ async function _buildShareImages(h,useAr,paletteOverride){
     const ctx=c.getContext('2d');
     _renderShareSlide(ctx,W,H,{
       items:slides[i],fontSize,lineHeight,padX,bodyTop,bodyBot,bodyFont,
-      isAr:!!useAr,palette,maxWidth,chipText,url
+      isAr:!!useAr,palette,maxWidth,chipText,heading,url
     },i+1,slides.length,h);
     const blob=await new Promise(r=>c.toBlob(r,'image/png'));
     if(blob)blobs.push(blob);
