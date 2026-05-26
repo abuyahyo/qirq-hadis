@@ -883,15 +883,6 @@ function _splitShareSlides(items,maxLines){
   }
   return slides.length?slides:[[]];
 }
-function _roundRect(ctx,x,y,w,hh,r){
-  ctx.beginPath();
-  ctx.moveTo(x+r,y);
-  ctx.arcTo(x+w,y,x+w,y+hh,r);
-  ctx.arcTo(x+w,y+hh,x,y+hh,r);
-  ctx.arcTo(x,y+hh,x,y,r);
-  ctx.arcTo(x,y,x+w,y,r);
-  ctx.closePath();
-}
 function _renderShareSlide(ctx,W,H,s,idx,total,h){
   const p=s.palette;
   // Diagonal background gradient
@@ -907,31 +898,12 @@ function _renderShareSlide(ctx,W,H,s,idx,total,h){
 
   ctx.textBaseline='top';ctx.direction='ltr';
 
-  // Chip (collection name) top-left
-  ctx.font='600 28px Roboto, sans-serif';
-  const chipPadX=28, chipPadY=16, chipX=s.padX, chipY=72;
-  let ct=s.chipText||'';
-  const chipMaxW=W-2*s.padX-2*chipPadX;
-  if(ctx.measureText(ct).width>chipMaxW){
-    while(ct.length>4 && ctx.measureText(ct+'…').width>chipMaxW) ct=ct.slice(0,-1);
-    ct=ct.replace(/\s+$/,'')+'…';
-  }
-  const tw=ctx.measureText(ct).width;
-  const chipH=28+2*chipPadY, chipW=tw+2*chipPadX;
-  ctx.fillStyle=p.chipBg;
-  _roundRect(ctx,chipX,chipY,chipW,chipH,chipH/2);
-  ctx.fill();
-  ctx.fillStyle=p.chipText;
-  ctx.textBaseline='middle';
-  ctx.fillText(ct,chipX+chipPadX,chipY+chipH/2+1);
-  ctx.textBaseline='top';
-
-  // Heading (hadith number) — title size
+  // Heading (hadith number) — title size, top-left
   if(s.heading){
     ctx.fillStyle=p.text;
     ctx.font='700 56px Roboto, sans-serif';
     ctx.textAlign='left';
-    ctx.fillText(s.heading,s.padX,chipY+chipH+56);
+    ctx.fillText(s.heading,s.padX,84);
   }
 
   // Body text (left-aligned, top-aligned under heading)
@@ -971,7 +943,6 @@ function _renderShareSlide(ctx,W,H,s,idx,total,h){
 }
 const SHARE_PALETTE={
   bgTop:'#10544e',bgBot:'#052c2a',glow:'rgba(100,230,210,0.10)',
-  chipBg:'rgba(255,255,255,0.14)',chipText:'#ffffff',
   text:'#f2f7f4',dim:'rgba(255,255,255,0.55)'
 };
 const SHARE_URL='abuyahyo.github.io/qirq-hadis';
@@ -979,7 +950,7 @@ async function _buildShareImages(h,useAr,paletteOverride){
   const W=1080,H=1080;
   const palette=paletteOverride||SHARE_PALETTE;
   const padX=80;
-  const bodyTop=320;
+  const bodyTop=200;
   const bodyBot=H-110;
   const maxWidth=W-2*padX;
   const measureCanvas=document.createElement('canvas');
@@ -996,7 +967,6 @@ async function _buildShareImages(h,useAr,paletteOverride){
   if(useAr)mctx.direction='rtl';
   const items=_wrapShareText(mctx,text,maxWidth);
   const slides=_splitShareSlides(items,maxLines);
-  const chipText='Имом Нававийнинг «Қирқ ҳадис» тўплами';
   const heading=h.id+'-ҲАДИС';
   const url=SHARE_URL+'#h/'+h.id;
   const blobs=[];
@@ -1006,7 +976,7 @@ async function _buildShareImages(h,useAr,paletteOverride){
     const ctx=c.getContext('2d');
     _renderShareSlide(ctx,W,H,{
       items:slides[i],fontSize,lineHeight,padX,bodyTop,bodyBot,bodyFont,
-      isAr:!!useAr,palette,maxWidth,chipText,heading,url
+      isAr:!!useAr,palette,maxWidth,heading,url
     },i+1,slides.length,h);
     const blob=await new Promise(r=>c.toBlob(r,'image/png'));
     if(blob)blobs.push(blob);
