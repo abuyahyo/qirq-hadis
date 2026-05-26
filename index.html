@@ -931,7 +931,7 @@ function _renderShareSlide(ctx,W,H,s,idx,total,h){
     ctx.fillStyle=p.text;
     ctx.font='700 56px Roboto, sans-serif';
     ctx.textAlign='left';
-    ctx.fillText(s.heading,s.padX,chipY+chipH+28);
+    ctx.fillText(s.heading,s.padX,chipY+chipH+56);
   }
 
   // Body text (left-aligned, vertically centered)
@@ -983,7 +983,7 @@ async function _buildShareImages(h,useAr,paletteOverride){
   const W=1080,H=1080;
   const palette=paletteOverride||SHARE_PALETTE;
   const padX=80;
-  const bodyTop=290;
+  const bodyTop=320;
   const bodyBot=H-110;
   const maxWidth=W-2*padX;
   const measureCanvas=document.createElement('canvas');
