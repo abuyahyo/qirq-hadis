@@ -911,6 +911,14 @@ function _renderShareSlide(ctx,W,H,s,idx,total,h){
   ctx.font=s.bodyFont;
   const gapPx=s.fontSize*s.lineHeight;
   let y=s.bodyTop;
+  // Single-slide hadith: center vertically; multi-slide: top-align (consistent carousel)
+  if(total===1){
+    let totalH=0;
+    for(const it of s.items){
+      if(it.type==='line')totalH+=gapPx;else totalH+=gapPx*0.4;
+    }
+    y=s.bodyTop+Math.max(0,(s.bodyBot-s.bodyTop-totalH)/2);
+  }
   if(s.isAr){
     ctx.direction='rtl';ctx.textAlign='right';
     for(const it of s.items){
