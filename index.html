@@ -11,7 +11,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 <title>Имом Нававийнинг «Қирқ ҳадис» тўплами</title>
-<link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Amiri:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Roboto:wght@400;500&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Amiri:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Roboto:wght@400;500;600;700&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
 :root{--gold:#c9a84c;--gold-light:#e8d08a;--gold-dark:#8b6914;--bg:#0d0b07;--surface:#1c1710;--surface2:#2d2718;--surface3:#221d11;--border:#3a3020;--border2:#4a4030;--text:#e8dcc8;--text-dim:#9a8f78;--text-muted:#5a5040;--izoh:#b8d4a8;--izoh-bg:rgba(74,110,64,0.1);--izoh-border:#4a6e40}
 .light{--bg:#f5f0e8;--surface:#ede6d6;--surface2:#e0d8c4;--surface3:#d8cfba;--border:#c8bea8;--border2:#b8ae98;--text:#2a2218;--text-dim:#5a5040;--text-muted:#8a8070;--gold:#8b6914;--gold-light:#6b5010;--gold-dark:#5a4010;--izoh:#2a4a20;--izoh-bg:rgba(74,110,64,0.08);--izoh-border:#4a6e40}
@@ -237,6 +237,9 @@ body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;min-
 </div>
 <div class="muq-header">
 <h2 class="muq-title">Имом Нававийнинг муқаддимаси</h2>
+<button class="hadis-tool-btn" id="muqShareBtn" onclick="App.shareMuqaddima()" title="Расм қилиб улашиш" aria-label="Муқаддимани расм қилиб улашиш" style="margin-top:14px">
+<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+<span>Улашиш</span></button>
 </div>
 <div class="muq-body">
 <p>Барча мақтов оламлар Парвардигори Аллоҳга хосдир. У осмонлар ва ерларни тутиб турувчи ва жамики халойиқни бошқарувчи, мукаллафларни ҳидоят этмоқ ва дин йўл-йўриқларини баён этмоқ учун қатъий далиллар ва очиқ ҳужжатлар билан элчилар юборувчи Зотдир. У Зотга барча неъматлари учун ҳамд айтаман ва Ундан фазли-карамини янада зиёда этишини сўрайман.</p>
@@ -883,100 +886,87 @@ function _splitShareSlides(items,maxLines){
   }
   return slides.length?slides:[[]];
 }
-function _renderShareSlide(ctx,W,H,s,idx,total,h){
+const SHARE_PALETTE={
+  bgTop:'#f5f0e8',bgBot:'#ede6d6',
+  text:'#2a2218',dim:'#5a5040',gold:'#8b6914',goldDark:'#5a4010'
+};
+const SHARE_FF='Roboto, system-ui, -apple-system, "Segoe UI", Arial, sans-serif';
+function _renderShareSlide(ctx,W,H,s,idx,total){
   const p=s.palette;
-  // Diagonal background gradient
-  const grad=ctx.createLinearGradient(0,0,W*0.35,H);
+  const grad=ctx.createLinearGradient(0,0,0,H);
   grad.addColorStop(0,p.bgTop);
   grad.addColorStop(1,p.bgBot);
   ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
-  // Soft glow near top
-  const glow=ctx.createRadialGradient(W*0.42,H*0.12,30,W*0.42,H*0.12,W*0.85);
-  glow.addColorStop(0,p.glow);
-  glow.addColorStop(1,'rgba(0,0,0,0)');
-  ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
-
+  ctx.fillStyle=p.gold;ctx.fillRect(0,0,W,3);
   ctx.textBaseline='top';ctx.direction='ltr';
 
-  // Heading (hadith number) — title size, top-left
-  if(s.heading){
-    ctx.fillStyle=p.text;
-    ctx.font='700 56px Roboto, sans-serif';
-    ctx.textAlign='left';
-    ctx.fillText(s.heading,s.padX,84);
+  // Heading (centered, gold) — auto-shrink to fit width
+  ctx.fillStyle=p.gold;
+  ctx.textAlign='center';
+  let hfs=44;
+  const hmax=W-2*s.padX;
+  ctx.font='600 '+hfs+'px '+SHARE_FF;
+  while(hfs>26 && ctx.measureText(s.heading).width>hmax){
+    hfs-=2;ctx.font='600 '+hfs+'px '+SHARE_FF;
   }
+  ctx.fillText(s.heading,W/2,108);
 
-  // Body text (left-aligned, top-aligned under heading)
+  // Ornament separator
+  const ocx=W/2, ony=s.ornamentY, side=220, gap=24;
+  const g1=ctx.createLinearGradient(ocx-side-gap,ony,ocx-gap,ony);
+  g1.addColorStop(0,'rgba(0,0,0,0)');g1.addColorStop(1,p.goldDark);
+  ctx.fillStyle=g1;ctx.fillRect(ocx-side-gap,ony,side,1);
+  const g2=ctx.createLinearGradient(ocx+gap,ony,ocx+side+gap,ony);
+  g2.addColorStop(0,p.goldDark);g2.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=g2;ctx.fillRect(ocx+gap,ony,side,1);
+  ctx.fillStyle=p.gold;
+  ctx.beginPath();ctx.moveTo(ocx,ony-6);ctx.lineTo(ocx+6,ony);ctx.lineTo(ocx,ony+6);ctx.lineTo(ocx-6,ony);ctx.closePath();ctx.fill();
+  ctx.fillStyle=p.goldDark;
+  ctx.beginPath();ctx.arc(ocx-15,ony,1.8,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(ocx+15,ony,1.8,0,Math.PI*2);ctx.fill();
+
+  // Body (left-aligned, vertically centered)
   ctx.fillStyle=p.text;
   ctx.font=s.bodyFont;
+  ctx.textAlign='left';
   const gapPx=s.fontSize*s.lineHeight;
-  let y=s.bodyTop;
-  // Single-slide hadith: center vertically; multi-slide: top-align (consistent carousel)
-  if(total===1){
-    let totalH=0;
-    for(const it of s.items){
-      if(it.type==='line')totalH+=gapPx;else totalH+=gapPx*0.4;
-    }
-    y=s.bodyTop+Math.max(0,(s.bodyBot-s.bodyTop-totalH)/2);
+  let totalH=0;
+  for(const it of s.items){
+    if(it.type==='line')totalH+=gapPx;else totalH+=gapPx*0.4;
   }
-  if(s.isAr){
-    ctx.direction='rtl';ctx.textAlign='right';
-    for(const it of s.items){
-      if(it.type==='line'){ctx.fillText(it.text,W-s.padX,y);y+=gapPx;}
-      else y+=gapPx*0.4;
-    }
-    ctx.direction='ltr';ctx.textAlign='left';
-  }else{
-    ctx.textAlign='left';
-    for(const it of s.items){
-      if(it.type==='line'){ctx.fillText(it.text,s.padX,y);y+=gapPx;}
-      else y+=gapPx*0.4;
-    }
+  let y=s.bodyTop+Math.max(0,(s.bodyBot-s.bodyTop-totalH)/2);
+  for(const it of s.items){
+    if(it.type==='line'){ctx.fillText(it.text,s.padX,y);y+=gapPx;}
+    else y+=gapPx*0.4;
   }
 
-  // Bottom bar: slide index (left) + URL (right)
-  ctx.textBaseline='alphabetic';
-  ctx.fillStyle=p.dim;
+  // Slide index (centered at bottom)
   if(total>1){
-    ctx.font='700 26px Roboto, sans-serif';
-    ctx.textAlign='left';
-    ctx.fillText(idx+' / '+total,s.padX,H-58);
+    ctx.textAlign='center';
+    ctx.fillStyle=p.dim;
+    ctx.font='500 22px '+SHARE_FF;
+    ctx.fillText(idx+' / '+total,W/2,H-58);
   }
-  if(s.url){
-    ctx.font='500 26px Roboto, sans-serif';
-    ctx.textAlign='right';
-    ctx.fillText(s.url,W-s.padX,H-58);
-  }
-  ctx.textAlign='left';ctx.textBaseline='top';
+  ctx.textAlign='left';
 }
-const SHARE_PALETTE={
-  bgTop:'#10544e',bgBot:'#052c2a',glow:'rgba(100,230,210,0.10)',
-  text:'#f2f7f4',dim:'rgba(255,255,255,0.55)'
-};
-const SHARE_URL='abuyahyo.github.io/qirq-hadis';
-async function _buildShareImages(h,useAr,paletteOverride){
+async function _buildShareImages(bodyText,heading){
   const W=1080,H=1080;
-  const palette=paletteOverride||SHARE_PALETTE;
-  const padX=80;
-  const bodyTop=200;
+  const palette=SHARE_PALETTE;
+  const padX=90;
+  const ornamentY=180;
+  const bodyTop=ornamentY+40;
   const bodyBot=H-110;
   const maxWidth=W-2*padX;
   const measureCanvas=document.createElement('canvas');
   const mctx=measureCanvas.getContext('2d');
-  const text=useAr?h.arabic:h.text;
-  const fontSize=useAr?46:40;
-  const lineHeight=useAr?1.7:1.45;
+  const fontSize=38;
+  const lineHeight=1.5;
   const gapPx=fontSize*lineHeight;
   const maxLines=Math.max(3,Math.floor((bodyBot-bodyTop)/gapPx));
-  const bodyFont=useAr
-    ?fontSize+'px "Scheherazade New", "Amiri", serif'
-    :'600 '+fontSize+'px Roboto, sans-serif';
+  const bodyFont='400 '+fontSize+'px '+SHARE_FF;
   mctx.font=bodyFont;
-  if(useAr)mctx.direction='rtl';
-  const items=_wrapShareText(mctx,text,maxWidth);
+  const items=_wrapShareText(mctx,bodyText,maxWidth);
   const slides=_splitShareSlides(items,maxLines);
-  const heading=h.id+'-ҲАДИС';
-  const url=SHARE_URL+'#h/'+h.id;
   const blobs=[];
   for(let i=0;i<slides.length;i++){
     const c=document.createElement('canvas');
@@ -984,18 +974,14 @@ async function _buildShareImages(h,useAr,paletteOverride){
     const ctx=c.getContext('2d');
     _renderShareSlide(ctx,W,H,{
       items:slides[i],fontSize,lineHeight,padX,bodyTop,bodyBot,bodyFont,
-      isAr:!!useAr,palette,maxWidth,heading,url
-    },i+1,slides.length,h);
+      ornamentY,palette,maxWidth,heading
+    },i+1,slides.length);
     const blob=await new Promise(r=>c.toBlob(r,'image/png'));
     if(blob)blobs.push(blob);
   }
   return blobs;
 }
-async function shareHadis(){
-  if(!curN)return;
-  const h=QD.find(x=>x.id===curN);
-  if(!h)return;
-  const btn=document.getElementById('hadisShareBtn');
+async function _shareSlides(btn,build,fileBase){
   if(!btn||btn.classList.contains('disabled'))return;
   const lbl=btn.querySelector('span');
   const orig=lbl?lbl.textContent:'Улашиш';
@@ -1005,9 +991,9 @@ async function shareHadis(){
   status('⏳ Тайёрланмоқда…');
   try{
     if(document.fonts&&document.fonts.ready){try{await document.fonts.ready;}catch(_){}}
-    const blobs=await _buildShareImages(h,false);
+    const blobs=await build();
     if(!blobs.length)throw new Error('No images generated');
-    const files=blobs.map((b,i)=>new File([b],'qirq-hadis-'+h.id+'-'+(i+1)+'.png',{type:'image/png'}));
+    const files=blobs.map((b,i)=>new File([b],fileBase+'-'+(i+1)+'.png',{type:'image/png'}));
     const shareData={files};
     if(navigator.canShare&&navigator.canShare({files})){
       try{
@@ -1029,10 +1015,29 @@ async function shareHadis(){
     }
     setTimeout(reset,1800);
   }catch(e){
-    console.error('shareHadis failed:',e);
+    console.error('share failed:',e);
     status('✗ Хато');
     setTimeout(reset,1800);
   }
+}
+async function shareHadis(){
+  if(!curN)return;
+  const h=QD.find(x=>x.id===curN);
+  if(!h)return;
+  const btn=document.getElementById('hadisShareBtn');
+  await _shareSlides(btn,()=>_buildShareImages(h.text,h.id+'-ҲАДИС'),'qirq-hadis-'+h.id);
+}
+async function shareMuqaddima(){
+  const btn=document.getElementById('muqShareBtn');
+  const body=document.querySelector('#muqaddimaPage .muq-body');
+  if(!body)return;
+  const parts=[];
+  body.querySelectorAll('p,.muq-quote').forEach(el=>{
+    const t=el.textContent.trim();
+    if(t)parts.push(t);
+  });
+  const text=parts.join('\n');
+  await _shareSlides(btn,()=>_buildShareImages(text,'ИМОМ НАВАВИЙ МУҚАДДИМАСИ'),'qirq-hadis-muqaddima');
 }
 const App={
   open:openHadis,
@@ -1041,6 +1046,7 @@ const App={
   adjustFont:adjustFont,
   copyHadis:copyHadis,
   shareHadis:shareHadis,
+  shareMuqaddima:shareMuqaddima,
   openMuqaddima:function(skipRoute){
     document.title='Муқаддима | Имом Нававий — Қирқ ҳадис';
     showPanel('muqaddima');
