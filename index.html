@@ -886,97 +886,84 @@ function _splitShareSlides(items,maxLines){
   }
   return slides.length?slides:[[]];
 }
+const SHARE_PALETTE={
+  bgTop:'#f5f0e8',bgBot:'#ede6d6',
+  text:'#2a2218',dim:'#5a5040',gold:'#8b6914',goldDark:'#5a4010'
+};
+const SHARE_FF='Roboto, system-ui, -apple-system, "Segoe UI", Arial, sans-serif';
 function _renderShareSlide(ctx,W,H,s,idx,total){
   const p=s.palette;
-  // Diagonal background gradient
-  const grad=ctx.createLinearGradient(0,0,W*0.35,H);
+  const grad=ctx.createLinearGradient(0,0,0,H);
   grad.addColorStop(0,p.bgTop);
   grad.addColorStop(1,p.bgBot);
   ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
-  // Soft glow near top
-  const glow=ctx.createRadialGradient(W*0.42,H*0.12,30,W*0.42,H*0.12,W*0.85);
-  glow.addColorStop(0,p.glow);
-  glow.addColorStop(1,'rgba(0,0,0,0)');
-  ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
-
+  ctx.fillStyle=p.gold;ctx.fillRect(0,0,W,3);
   ctx.textBaseline='top';ctx.direction='ltr';
 
-  // Heading — title size, top-left (auto-shrink to fit width)
-  if(s.heading){
-    ctx.fillStyle=p.text;
-    ctx.textAlign='left';
-    let hfs=56;
-    const hmax=W-2*s.padX;
-    ctx.font='700 '+hfs+'px '+SHARE_FF;
-    while(hfs>34 && ctx.measureText(s.heading).width>hmax){
-      hfs-=2;ctx.font='700 '+hfs+'px '+SHARE_FF;
-    }
-    ctx.fillText(s.heading,s.padX,84);
+  // Heading (centered, gold) — auto-shrink to fit width
+  ctx.fillStyle=p.gold;
+  ctx.textAlign='center';
+  let hfs=44;
+  const hmax=W-2*s.padX;
+  ctx.font='600 '+hfs+'px '+SHARE_FF;
+  while(hfs>26 && ctx.measureText(s.heading).width>hmax){
+    hfs-=2;ctx.font='600 '+hfs+'px '+SHARE_FF;
   }
+  ctx.fillText(s.heading,W/2,108);
 
-  // Body text (left-aligned, top-aligned under heading)
+  // Ornament separator
+  const ocx=W/2, ony=s.ornamentY, side=220, gap=24;
+  const g1=ctx.createLinearGradient(ocx-side-gap,ony,ocx-gap,ony);
+  g1.addColorStop(0,'rgba(0,0,0,0)');g1.addColorStop(1,p.goldDark);
+  ctx.fillStyle=g1;ctx.fillRect(ocx-side-gap,ony,side,1);
+  const g2=ctx.createLinearGradient(ocx+gap,ony,ocx+side+gap,ony);
+  g2.addColorStop(0,p.goldDark);g2.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=g2;ctx.fillRect(ocx+gap,ony,side,1);
+  ctx.fillStyle=p.gold;
+  ctx.beginPath();ctx.moveTo(ocx,ony-6);ctx.lineTo(ocx+6,ony);ctx.lineTo(ocx,ony+6);ctx.lineTo(ocx-6,ony);ctx.closePath();ctx.fill();
+  ctx.fillStyle=p.goldDark;
+  ctx.beginPath();ctx.arc(ocx-15,ony,1.8,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(ocx+15,ony,1.8,0,Math.PI*2);ctx.fill();
+
+  // Body (left-aligned, vertically centered)
   ctx.fillStyle=p.text;
   ctx.font=s.bodyFont;
+  ctx.textAlign='left';
   const gapPx=s.fontSize*s.lineHeight;
-  let y=s.bodyTop;
-  // Single-slide hadith: center vertically; multi-slide: top-align (consistent carousel)
-  if(total===1){
-    let totalH=0;
-    for(const it of s.items){
-      if(it.type==='line')totalH+=gapPx;else totalH+=gapPx*0.4;
-    }
-    y=s.bodyTop+Math.max(0,(s.bodyBot-s.bodyTop-totalH)/2);
+  let totalH=0;
+  for(const it of s.items){
+    if(it.type==='line')totalH+=gapPx;else totalH+=gapPx*0.4;
   }
-  if(s.isAr){
-    ctx.direction='rtl';ctx.textAlign='right';
-    for(const it of s.items){
-      if(it.type==='line'){ctx.fillText(it.text,W-s.padX,y);y+=gapPx;}
-      else y+=gapPx*0.4;
-    }
-    ctx.direction='ltr';ctx.textAlign='left';
-  }else{
-    ctx.textAlign='left';
-    for(const it of s.items){
-      if(it.type==='line'){ctx.fillText(it.text,s.padX,y);y+=gapPx;}
-      else y+=gapPx*0.4;
-    }
+  let y=s.bodyTop+Math.max(0,(s.bodyBot-s.bodyTop-totalH)/2);
+  for(const it of s.items){
+    if(it.type==='line'){ctx.fillText(it.text,s.padX,y);y+=gapPx;}
+    else y+=gapPx*0.4;
   }
 
-  // Bottom bar: slide index (left) + URL (right)
-  ctx.textBaseline='alphabetic';
-  ctx.fillStyle=p.dim;
+  // Slide index (centered at bottom)
   if(total>1){
-    ctx.font='700 26px '+SHARE_FF;
-    ctx.textAlign='left';
-    ctx.fillText(idx+' / '+total,s.padX,H-58);
+    ctx.textAlign='center';
+    ctx.fillStyle=p.dim;
+    ctx.font='500 22px '+SHARE_FF;
+    ctx.fillText(idx+' / '+total,W/2,H-58);
   }
-  if(s.url){
-    ctx.font='500 26px '+SHARE_FF;
-    ctx.textAlign='right';
-    ctx.fillText(s.url,W-s.padX,H-58);
-  }
-  ctx.textAlign='left';ctx.textBaseline='top';
+  ctx.textAlign='left';
 }
-const SHARE_PALETTE={
-  bgTop:'#10544e',bgBot:'#052c2a',glow:'rgba(100,230,210,0.10)',
-  text:'#f2f7f4',dim:'rgba(255,255,255,0.55)'
-};
-const SHARE_FF='Roboto, system-ui, -apple-system, "Segoe UI", Arial, sans-serif';
-const SHARE_URL='abuyahyo.github.io/qirq-hadis';
-async function _buildShareImages(bodyText,heading,url,paletteOverride){
+async function _buildShareImages(bodyText,heading){
   const W=1080,H=1080;
-  const palette=paletteOverride||SHARE_PALETTE;
-  const padX=80;
-  const bodyTop=200;
+  const palette=SHARE_PALETTE;
+  const padX=90;
+  const ornamentY=180;
+  const bodyTop=ornamentY+40;
   const bodyBot=H-110;
   const maxWidth=W-2*padX;
   const measureCanvas=document.createElement('canvas');
   const mctx=measureCanvas.getContext('2d');
-  const fontSize=40;
-  const lineHeight=1.45;
+  const fontSize=38;
+  const lineHeight=1.5;
   const gapPx=fontSize*lineHeight;
   const maxLines=Math.max(3,Math.floor((bodyBot-bodyTop)/gapPx));
-  const bodyFont='600 '+fontSize+'px '+SHARE_FF;
+  const bodyFont='400 '+fontSize+'px '+SHARE_FF;
   mctx.font=bodyFont;
   const items=_wrapShareText(mctx,bodyText,maxWidth);
   const slides=_splitShareSlides(items,maxLines);
@@ -987,7 +974,7 @@ async function _buildShareImages(bodyText,heading,url,paletteOverride){
     const ctx=c.getContext('2d');
     _renderShareSlide(ctx,W,H,{
       items:slides[i],fontSize,lineHeight,padX,bodyTop,bodyBot,bodyFont,
-      isAr:false,palette,maxWidth,heading,url
+      ornamentY,palette,maxWidth,heading
     },i+1,slides.length);
     const blob=await new Promise(r=>c.toBlob(r,'image/png'));
     if(blob)blobs.push(blob);
@@ -1038,7 +1025,7 @@ async function shareHadis(){
   const h=QD.find(x=>x.id===curN);
   if(!h)return;
   const btn=document.getElementById('hadisShareBtn');
-  await _shareSlides(btn,()=>_buildShareImages(h.text,h.id+'-ҲАДИС',SHARE_URL+'#h/'+h.id),'qirq-hadis-'+h.id);
+  await _shareSlides(btn,()=>_buildShareImages(h.text,h.id+'-ҲАДИС'),'qirq-hadis-'+h.id);
 }
 async function shareMuqaddima(){
   const btn=document.getElementById('muqShareBtn');
@@ -1050,7 +1037,7 @@ async function shareMuqaddima(){
     if(t)parts.push(t);
   });
   const text=parts.join('\n');
-  await _shareSlides(btn,()=>_buildShareImages(text,'ИМОМ НАВАВИЙ МУҚАДДИМАСИ',SHARE_URL+'#muqaddima'),'qirq-hadis-muqaddima');
+  await _shareSlides(btn,()=>_buildShareImages(text,'ИМОМ НАВАВИЙ МУҚАДДИМАСИ'),'qirq-hadis-muqaddima');
 }
 const App={
   open:openHadis,
