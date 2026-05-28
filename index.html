@@ -237,6 +237,9 @@ body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;min-
 </div>
 <div class="muq-header">
 <h2 class="muq-title">Имом Нававийнинг муқаддимаси</h2>
+<button class="hadis-tool-btn" id="muqShareBtn" onclick="App.shareMuqaddima()" title="Расм қилиб улашиш" aria-label="Муқаддимани расм қилиб улашиш" style="margin-top:14px">
+<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+<span>Улашиш</span></button>
 </div>
 <div class="muq-body">
 <p>Барча мақтов оламлар Парвардигори Аллоҳга хосдир. У осмонлар ва ерларни тутиб турувчи ва жамики халойиқни бошқарувчи, мукаллафларни ҳидоят этмоқ ва дин йўл-йўриқларини баён этмоқ учун қатъий далиллар ва очиқ ҳужжатлар билан элчилар юборувчи Зотдир. У Зотга барча неъматлари учун ҳамд айтаман ва Ундан фазли-карамини янада зиёда этишини сўрайман.</p>
@@ -883,7 +886,7 @@ function _splitShareSlides(items,maxLines){
   }
   return slides.length?slides:[[]];
 }
-function _renderShareSlide(ctx,W,H,s,idx,total,h){
+function _renderShareSlide(ctx,W,H,s,idx,total){
   const p=s.palette;
   // Diagonal background gradient
   const grad=ctx.createLinearGradient(0,0,W*0.35,H);
@@ -898,11 +901,16 @@ function _renderShareSlide(ctx,W,H,s,idx,total,h){
 
   ctx.textBaseline='top';ctx.direction='ltr';
 
-  // Heading (hadith number) — title size, top-left
+  // Heading — title size, top-left (auto-shrink to fit width)
   if(s.heading){
     ctx.fillStyle=p.text;
-    ctx.font='700 56px Roboto, sans-serif';
     ctx.textAlign='left';
+    let hfs=56;
+    const hmax=W-2*s.padX;
+    ctx.font='700 '+hfs+'px Roboto, sans-serif';
+    while(hfs>34 && ctx.measureText(s.heading).width>hmax){
+      hfs-=2;ctx.font='700 '+hfs+'px Roboto, sans-serif';
+    }
     ctx.fillText(s.heading,s.padX,84);
   }
 
@@ -954,7 +962,7 @@ const SHARE_PALETTE={
   text:'#f2f7f4',dim:'rgba(255,255,255,0.55)'
 };
 const SHARE_URL='abuyahyo.github.io/qirq-hadis';
-async function _buildShareImages(h,useAr,paletteOverride){
+async function _buildShareImages(bodyText,heading,url,paletteOverride){
   const W=1080,H=1080;
   const palette=paletteOverride||SHARE_PALETTE;
   const padX=80;
@@ -963,20 +971,14 @@ async function _buildShareImages(h,useAr,paletteOverride){
   const maxWidth=W-2*padX;
   const measureCanvas=document.createElement('canvas');
   const mctx=measureCanvas.getContext('2d');
-  const text=useAr?h.arabic:h.text;
-  const fontSize=useAr?46:40;
-  const lineHeight=useAr?1.7:1.45;
+  const fontSize=40;
+  const lineHeight=1.45;
   const gapPx=fontSize*lineHeight;
   const maxLines=Math.max(3,Math.floor((bodyBot-bodyTop)/gapPx));
-  const bodyFont=useAr
-    ?fontSize+'px "Scheherazade New", "Amiri", serif'
-    :'600 '+fontSize+'px Roboto, sans-serif';
+  const bodyFont='600 '+fontSize+'px Roboto, sans-serif';
   mctx.font=bodyFont;
-  if(useAr)mctx.direction='rtl';
-  const items=_wrapShareText(mctx,text,maxWidth);
+  const items=_wrapShareText(mctx,bodyText,maxWidth);
   const slides=_splitShareSlides(items,maxLines);
-  const heading=h.id+'-ҲАДИС';
-  const url=SHARE_URL+'#h/'+h.id;
   const blobs=[];
   for(let i=0;i<slides.length;i++){
     const c=document.createElement('canvas');
@@ -984,18 +986,14 @@ async function _buildShareImages(h,useAr,paletteOverride){
     const ctx=c.getContext('2d');
     _renderShareSlide(ctx,W,H,{
       items:slides[i],fontSize,lineHeight,padX,bodyTop,bodyBot,bodyFont,
-      isAr:!!useAr,palette,maxWidth,heading,url
-    },i+1,slides.length,h);
+      isAr:false,palette,maxWidth,heading,url
+    },i+1,slides.length);
     const blob=await new Promise(r=>c.toBlob(r,'image/png'));
     if(blob)blobs.push(blob);
   }
   return blobs;
 }
-async function shareHadis(){
-  if(!curN)return;
-  const h=QD.find(x=>x.id===curN);
-  if(!h)return;
-  const btn=document.getElementById('hadisShareBtn');
+async function _shareSlides(btn,build,fileBase){
   if(!btn||btn.classList.contains('disabled'))return;
   const lbl=btn.querySelector('span');
   const orig=lbl?lbl.textContent:'Улашиш';
@@ -1005,9 +1003,9 @@ async function shareHadis(){
   status('⏳ Тайёрланмоқда…');
   try{
     if(document.fonts&&document.fonts.ready){try{await document.fonts.ready;}catch(_){}}
-    const blobs=await _buildShareImages(h,false);
+    const blobs=await build();
     if(!blobs.length)throw new Error('No images generated');
-    const files=blobs.map((b,i)=>new File([b],'qirq-hadis-'+h.id+'-'+(i+1)+'.png',{type:'image/png'}));
+    const files=blobs.map((b,i)=>new File([b],fileBase+'-'+(i+1)+'.png',{type:'image/png'}));
     const shareData={files};
     if(navigator.canShare&&navigator.canShare({files})){
       try{
@@ -1029,10 +1027,29 @@ async function shareHadis(){
     }
     setTimeout(reset,1800);
   }catch(e){
-    console.error('shareHadis failed:',e);
+    console.error('share failed:',e);
     status('✗ Хато');
     setTimeout(reset,1800);
   }
+}
+async function shareHadis(){
+  if(!curN)return;
+  const h=QD.find(x=>x.id===curN);
+  if(!h)return;
+  const btn=document.getElementById('hadisShareBtn');
+  await _shareSlides(btn,()=>_buildShareImages(h.text,h.id+'-ҲАДИС',SHARE_URL+'#h/'+h.id),'qirq-hadis-'+h.id);
+}
+async function shareMuqaddima(){
+  const btn=document.getElementById('muqShareBtn');
+  const body=document.querySelector('#muqaddimaPage .muq-body');
+  if(!body)return;
+  const parts=[];
+  body.querySelectorAll('p,.muq-quote').forEach(el=>{
+    const t=el.textContent.trim();
+    if(t)parts.push(t);
+  });
+  const text=parts.join('\n');
+  await _shareSlides(btn,()=>_buildShareImages(text,'ИМОМ НАВАВИЙ МУҚАДДИМАСИ',SHARE_URL+'#muqaddima'),'qirq-hadis-muqaddima');
 }
 const App={
   open:openHadis,
@@ -1041,6 +1058,7 @@ const App={
   adjustFont:adjustFont,
   copyHadis:copyHadis,
   shareHadis:shareHadis,
+  shareMuqaddima:shareMuqaddima,
   openMuqaddima:function(skipRoute){
     document.title='Муқаддима | Имом Нававий — Қирқ ҳадис';
     showPanel('muqaddima');
