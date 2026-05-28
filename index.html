@@ -891,6 +891,7 @@ const SHARE_PALETTE={
   text:'#2a2218',dim:'#5a5040',gold:'#8b6914',goldDark:'#5a4010'
 };
 const SHARE_FF='Roboto, system-ui, -apple-system, "Segoe UI", Arial, sans-serif';
+const SHARE_URL='abuyahyo.github.io/qirq-hadis';
 function _renderShareSlide(ctx,W,H,s,idx,total){
   const p=s.palette;
   const grad=ctx.createLinearGradient(0,0,0,H);
@@ -940,17 +941,18 @@ function _renderShareSlide(ctx,W,H,s,idx,total){
     else y+=gapPx*0.4;
   }
 
-  // Slide index (centered at bottom)
+  // Bottom: URL (always) + slide index (above it, if multi-slide)
+  ctx.textAlign='center';
+  ctx.fillStyle=p.dim;
+  ctx.font='500 22px '+SHARE_FF;
+  ctx.fillText(SHARE_URL,W/2,H-58);
   if(total>1){
-    ctx.textAlign='center';
-    ctx.fillStyle=p.dim;
-    ctx.font='500 22px '+SHARE_FF;
-    ctx.fillText(idx+' / '+total,W/2,H-58);
+    ctx.fillText(idx+' / '+total,W/2,H-94);
   }
   ctx.textAlign='left';
 }
 async function _buildShareImages(bodyText,heading){
-  const W=1080,H=1080;
+  const W=1080,H=1350;
   const palette=SHARE_PALETTE;
   const padX=90;
   const ornamentY=180;
