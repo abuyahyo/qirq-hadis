@@ -152,7 +152,7 @@ body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;min-
 .muq-divider span{font-size:14px;letter-spacing:6px;color:var(--gold-dark)}
 .muq-footer{margin-top:36px;padding-top:24px;border-top:1px solid var(--border);text-align:center;font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--text-dim);font-size:14px;line-height:1.8}
 .muq-footer-amin{display:block;font-size:18px;color:var(--gold);font-weight:600;margin-top:10px;font-style:normal}
-.muq-nav{display:flex;align-items:center;justify-content:center;margin-bottom:20px}
+.muq-nav{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:20px}
 .muq-nav .nav-btn{border-right:none;border-radius:999px;background:var(--surface);border:1px solid var(--border);box-shadow:0 1px 2px rgba(0,0,0,.15);padding:10px 22px}
 </style>
 </head>
@@ -234,12 +234,12 @@ body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;min-
 <button class="nav-btn nav-btn-home" onclick="App.goHome()" aria-label="Бош саҳифага қайтиш">
 <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8M5 9.5V20h14V9.5"/></svg>
 </button>
+<button class="nav-btn" id="muqShareBtn" onclick="App.shareMuqaddima()" style="gap:8px;font-family:'Roboto',sans-serif;font-size:14px" title="Расм қилиб улашиш" aria-label="Муқаддимани расм қилиб улашиш">
+<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+<span>Улашиш</span></button>
 </div>
 <div class="muq-header">
 <h2 class="muq-title">Имом Нававийнинг муқаддимаси</h2>
-<button class="hadis-tool-btn" id="muqShareBtn" onclick="App.shareMuqaddima()" title="Расм қилиб улашиш" aria-label="Муқаддимани расм қилиб улашиш" style="margin-top:14px">
-<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-<span>Улашиш</span></button>
 </div>
 <div class="muq-body">
 <p>Барча мақтов оламлар Парвардигори Аллоҳга хосдир. У осмонлар ва ерларни тутиб турувчи ва жамики халойиқни бошқарувчи, мукаллафларни ҳидоят этмоқ ва дин йўл-йўриқларини баён этмоқ учун қатъий далиллар ва очиқ ҳужжатлар билан элчилар юборувчи Зотдир. У Зотга барча неъматлари учун ҳамд айтаман ва Ундан фазли-карамини янада зиёда этишини сўрайман.</p>
