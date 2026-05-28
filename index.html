@@ -11,7 +11,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 <title>Имом Нававийнинг «Қирқ ҳадис» тўплами</title>
-<link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Amiri:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Roboto:wght@400;500&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Amiri:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Roboto:wght@400;500;600;700&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
 :root{--gold:#c9a84c;--gold-light:#e8d08a;--gold-dark:#8b6914;--bg:#0d0b07;--surface:#1c1710;--surface2:#2d2718;--surface3:#221d11;--border:#3a3020;--border2:#4a4030;--text:#e8dcc8;--text-dim:#9a8f78;--text-muted:#5a5040;--izoh:#b8d4a8;--izoh-bg:rgba(74,110,64,0.1);--izoh-border:#4a6e40}
 .light{--bg:#f5f0e8;--surface:#ede6d6;--surface2:#e0d8c4;--surface3:#d8cfba;--border:#c8bea8;--border2:#b8ae98;--text:#2a2218;--text-dim:#5a5040;--text-muted:#8a8070;--gold:#8b6914;--gold-light:#6b5010;--gold-dark:#5a4010;--izoh:#2a4a20;--izoh-bg:rgba(74,110,64,0.08);--izoh-border:#4a6e40}
@@ -907,9 +907,9 @@ function _renderShareSlide(ctx,W,H,s,idx,total){
     ctx.textAlign='left';
     let hfs=56;
     const hmax=W-2*s.padX;
-    ctx.font='700 '+hfs+'px Roboto, sans-serif';
+    ctx.font='700 '+hfs+'px '+SHARE_FF;
     while(hfs>34 && ctx.measureText(s.heading).width>hmax){
-      hfs-=2;ctx.font='700 '+hfs+'px Roboto, sans-serif';
+      hfs-=2;ctx.font='700 '+hfs+'px '+SHARE_FF;
     }
     ctx.fillText(s.heading,s.padX,84);
   }
@@ -946,12 +946,12 @@ function _renderShareSlide(ctx,W,H,s,idx,total){
   ctx.textBaseline='alphabetic';
   ctx.fillStyle=p.dim;
   if(total>1){
-    ctx.font='700 26px Roboto, sans-serif';
+    ctx.font='700 26px '+SHARE_FF;
     ctx.textAlign='left';
     ctx.fillText(idx+' / '+total,s.padX,H-58);
   }
   if(s.url){
-    ctx.font='500 26px Roboto, sans-serif';
+    ctx.font='500 26px '+SHARE_FF;
     ctx.textAlign='right';
     ctx.fillText(s.url,W-s.padX,H-58);
   }
@@ -961,6 +961,7 @@ const SHARE_PALETTE={
   bgTop:'#10544e',bgBot:'#052c2a',glow:'rgba(100,230,210,0.10)',
   text:'#f2f7f4',dim:'rgba(255,255,255,0.55)'
 };
+const SHARE_FF='Roboto, system-ui, -apple-system, "Segoe UI", Arial, sans-serif';
 const SHARE_URL='abuyahyo.github.io/qirq-hadis';
 async function _buildShareImages(bodyText,heading,url,paletteOverride){
   const W=1080,H=1080;
@@ -975,7 +976,7 @@ async function _buildShareImages(bodyText,heading,url,paletteOverride){
   const lineHeight=1.45;
   const gapPx=fontSize*lineHeight;
   const maxLines=Math.max(3,Math.floor((bodyBot-bodyTop)/gapPx));
-  const bodyFont='600 '+fontSize+'px Roboto, sans-serif';
+  const bodyFont='600 '+fontSize+'px '+SHARE_FF;
   mctx.font=bodyFont;
   const items=_wrapShareText(mctx,bodyText,maxWidth);
   const slides=_splitShareSlides(items,maxLines);
