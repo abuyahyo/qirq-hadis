@@ -154,6 +154,19 @@ body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;min-
 .muq-footer-amin{display:block;font-size:18px;color:var(--gold);font-weight:600;margin-top:10px;font-style:normal}
 .muq-nav{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:20px}
 .muq-nav .nav-btn{border-right:none;border-radius:999px;background:var(--surface);border:1px solid var(--border);box-shadow:0 1px 2px rgba(0,0,0,.15);padding:10px 22px}
+.install-banner{position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));max-width:480px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,.35),0 2px 6px rgba(0,0,0,.2);z-index:1000;animation:install-slide-up .4s ease-out;font-family:'Roboto',sans-serif}
+.install-banner[hidden]{display:none}
+.install-banner-icon{width:44px;height:44px;border-radius:10px;flex-shrink:0}
+.install-banner-text{flex:1;min-width:0;color:var(--text);line-height:1.35}
+.install-banner-text strong{display:block;font-size:14px;font-weight:600;color:var(--text);margin-bottom:2px}
+.install-banner-text p{margin:0;font-size:12px;color:var(--text-dim);font-weight:400}
+#install-banner-action{flex-shrink:0;background:var(--gold);color:var(--bg);border:none;border-radius:999px;padding:9px 18px;font-family:'Roboto',sans-serif;font-size:13px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s,transform .1s}
+#install-banner-action:active{transform:scale(.96)}
+#install-banner-action:hover{background:var(--gold-light)}
+#install-banner-close{flex-shrink:0;background:transparent;border:none;color:var(--text-muted);font-size:18px;line-height:1;padding:6px;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:999px;transition:color .15s,background .15s}
+#install-banner-close:hover{color:var(--text);background:var(--surface2)}
+@keyframes install-slide-up{from{transform:translateY(120%);opacity:0}to{transform:translateY(0);opacity:1}}
+@media(max-width:480px){.install-banner{padding:12px 14px;gap:10px}.install-banner-icon{width:40px;height:40px}.install-banner-text strong{font-size:13px}.install-banner-text p{font-size:11px}#install-banner-action{padding:8px 14px;font-size:12px}}
 </style>
 </head>
 <body>
@@ -1131,6 +1144,58 @@ if('serviceWorker' in navigator){
     navigator.serviceWorker.register('./sw.js').catch(function(){});
   });
 }
+(function(){
+  const INSTALL_DISMISS_KEY='qirq_install_dismissed_at';
+  const INSTALL_DISMISS_TTL=14*24*60*60*1000;
+  let deferredInstallPrompt=null;
+  const banner=document.getElementById('install-banner');
+  const action=document.getElementById('install-banner-action');
+  const close=document.getElementById('install-banner-close');
+  function isDismissed(){
+    const t=Number(localStorage.getItem(INSTALL_DISMISS_KEY)||0);
+    return t&&(Date.now()-t<INSTALL_DISMISS_TTL);
+  }
+  function isStandalone(){
+    return window.matchMedia('(display-mode: standalone)').matches
+      ||window.navigator.standalone===true;
+  }
+  function show(){
+    if(!banner||isStandalone()||isDismissed())return;
+    banner.hidden=false;
+  }
+  function hide(){if(banner)banner.hidden=true;}
+  window.addEventListener('beforeinstallprompt',function(e){
+    e.preventDefault();
+    deferredInstallPrompt=e;
+    show();
+  });
+  window.addEventListener('appinstalled',function(){
+    deferredInstallPrompt=null;
+    hide();
+  });
+  if(action)action.addEventListener('click',async function(){
+    if(!deferredInstallPrompt){hide();return;}
+    hide();
+    try{
+      deferredInstallPrompt.prompt();
+      await deferredInstallPrompt.userChoice;
+    }catch(_){}
+    deferredInstallPrompt=null;
+  });
+  if(close)close.addEventListener('click',function(){
+    localStorage.setItem(INSTALL_DISMISS_KEY,String(Date.now()));
+    hide();
+  });
+})();
 </script>
+<div class="install-banner" id="install-banner" hidden>
+<img src="icon-192.png" alt="" class="install-banner-icon">
+<div class="install-banner-text">
+<strong>Иловани ўрнатиш</strong>
+<p>Ушбу иловани телефонингизга ўрнатинг — оффлайнда ҳам ишлайди.</p>
+</div>
+<button id="install-banner-action">Ўрнатиш</button>
+<button id="install-banner-close" aria-label="Ёпиш">✕</button>
+</div>
 </body>
 </html>
