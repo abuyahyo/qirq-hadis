@@ -642,22 +642,118 @@ function ss(k,v){localStorage.setItem(k,v);}
 function gs(k){return localStorage.getItem(k);}
 function apTh(){document.documentElement.className=th;ss('th',th);}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function normAr(s){return String(s).replace(/[ً-ٰٟۖ-ۭ]/g,"").replace(/[أإآ]/g,"ا").replace(/ى/g,"ي").replace(/ة/g,"ه");}
-function highlight(s,q){
-  const safe=esc(s);
-  if(!q)return safe;
-  const re=new RegExp('('+esc(q).replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');
-  return safe.replace(re,'<mark>$1</mark>');
+/* ===== Кўп ёзувли «кечиримли» қидирув тизими (олдиндан индексланган) ===== */
+// Кирилл→каноник лотин (1→N). Апостроф/тутуқ белгилари ташланади, шунда
+// «ўқ» (кирилл) ва «o'q» (лотин) бир хил канон («oq») бўлади.
+const UZ_MAP={'а':'a','б':'b','в':'v','г':'g','ғ':'g','д':'d','е':'e','ё':'yo','ж':'j','з':'z','и':'i','й':'y','к':'k','қ':'q','л':'l','м':'m','н':'n','о':'o','ў':'o','п':'p','р':'r','с':'s','т':'t','у':'u','ф':'f','х':'x','ҳ':'h','ц':'ts','ч':'ch','ш':'sh','щ':'sh','ъ':'','ь':'','э':'e','ю':'yu','я':'ya','ы':'i'};
+const RE_APOS=/[’‘ʻʼ`´'ʹ]/;
+const RE_ARDIAC=/[ً-ٰٟۖ-ۭـ]/;
+const RE_WORDCH=/[a-z0-9ء-ي]/;
+// Майдонни каноник шакл + позиция-харитага айлантириш (map[i] = асл индекс).
+function foldUz(s){
+  let norm='';const map=[];s=String(s);
+  for(let i=0;i<s.length;i++){
+    const ch=s[i];
+    if(RE_APOS.test(ch))continue;
+    const lo=ch.toLowerCase();
+    const m=UZ_MAP[lo];
+    if(m!==undefined){for(let k=0;k<m.length;k++){norm+=m[k];map.push(i);}}
+    else{norm+=lo;map.push(i);}
+  }
+  return {norm,map};
 }
+function foldAr(s){
+  let norm='';const map=[];s=String(s);
+  for(let i=0;i<s.length;i++){
+    let ch=s[i];
+    if(RE_ARDIAC.test(ch))continue;
+    if(ch==='أ'||ch==='إ'||ch==='آ')ch='ا';
+    else if(ch==='ى')ch='ي';
+    else if(ch==='ة')ch='ه';
+    norm+=ch;map.push(i);
+  }
+  return {norm,map};
+}
+function hasArDiac(s){return RE_ARDIAC.test(s);}
+// Сўз БОШИДА мослик (матн боши ёки ҳарф-эмас белги олди). Арабчада «ал» артикли ихтиёрий.
+function findWord(norm,q,arabic,from){
+  from=from||0;let pos;
+  while((pos=norm.indexOf(q,from))!==-1){
+    const prev=pos>0?norm[pos-1]:'';
+    if(pos===0||!RE_WORDCH.test(prev))return pos;
+    if(arabic&&prev==='ل'&&pos>=2&&norm[pos-2]==='ا'){
+      const p2=pos>2?norm[pos-3]:'';
+      if(pos===2||!RE_WORDCH.test(p2))return pos;
+    }
+    from=pos+1;
+  }
+  return -1;
+}
+// Каноник позицияни асл индекс оралиғига харита қилиш.
+function mapRange(fold,start,len){
+  const os=fold.map[start];
+  const li=Math.min(start+len-1,fold.map.length-1);
+  return [os,fold.map[li]+1];
+}
+function matchUz(fold,qf){
+  if(!qf.norm)return null;
+  const pos=findWord(fold.norm,qf.norm,false,0);
+  return pos<0?null:mapRange(fold,pos,qf.norm.length);
+}
+function matchAr(fold,raw,qf,qraw){
+  if(!qf.norm)return null;
+  const nm=t=>t.replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه');
+  const exact=hasArDiac(qraw),qn=exact?nm(qraw):null;
+  let from=0,pos;
+  while((pos=findWord(fold.norm,qf.norm,true,from))!==-1){
+    const r=mapRange(fold,pos,qf.norm.length);
+    if(!exact)return r; // юмшоқ даража: ҳаракатсиз қидирув
+    if(nm(raw.slice(r[0],r[1]+2)).indexOf(qn)>=0)return r; // аниқ даража: ҳаракат мос
+    from=pos+1;
+  }
+  return null;
+}
+// Ажратиш — позицияни АСЛ матнга боғлаб, esc дан кейин <mark> қўяди (HTML бузилмайди).
+function hlFull(raw,r){return esc(raw.slice(0,r[0]))+'<mark>'+esc(raw.slice(r[0],r[1]))+'</mark>'+esc(raw.slice(r[1]));}
+function hlSnippet(raw,r,len,pad){
+  len=len||200;pad=pad==null?60:pad;
+  const start=Math.max(0,r[0]-pad);
+  const end=Math.min(raw.length,Math.max(r[1],start+len));
+  return (start>0?'…':'')+esc(raw.slice(start,r[0]))+'<mark>'+esc(raw.slice(r[0],r[1]))+'</mark>'+esc(raw.slice(r[1],end))+(end<raw.length?'…':'');
+}
+// Олдиндан ҳисобланган индекс (юкланганда 1 марта). Ҳар босишда қайта фолд йўқ.
+let SI=null;const SIById={};
+function buildIndex(){
+  SI=QD.map(h=>{
+    const flat=h.text.replace(/\n/g,' ');
+    const e={id:h.id,title:foldUz(h.title),text:foldUz(flat),narrator:foldUz(h.narrator),source:foldUz(h.source||''),arabic:h.arabic?foldAr(h.arabic):null,textFlat:flat};
+    SIById[h.id]=e;return e;
+  });
+}
+// Танадаги (title'дан ташқари) энг яхши мослик: text→narrator→source→arabic.
+function bestBody(si,h,qf,qfa,qraw){
+  let r;
+  if(r=matchUz(si.text,qf))return{field:'text',range:r};
+  if(r=matchUz(si.narrator,qf))return{field:'narrator',range:r};
+  if(r=matchUz(si.source,qf))return{field:'source',range:r};
+  if(si.arabic&&qfa.norm&&(r=matchAr(si.arabic,h.arabic,qfa,qraw)))return{field:'arabic',range:r};
+  return null;
+}
+function renderBody(si,h,bm){
+  const r=bm.range;
+  if(bm.field==='text')return hlSnippet(si.textFlat,r,200,60);
+  if(bm.field==='narrator')return '<em>Ровий:</em> '+hlFull(h.narrator,r);
+  if(bm.field==='source')return '<em>Манба:</em> '+hlFull(h.source,r);
+  const raw=h.arabic,start=Math.max(0,r[0]-40),end=Math.min(raw.length,Math.max(r[1],start+160));
+  return '<span lang="ar" dir="rtl" style="font-family:\'Scheherazade New\',serif;">'+(start>0?'…':'')+esc(raw.slice(start,r[0]))+'<mark>'+esc(raw.slice(r[0],r[1]))+'</mark>'+esc(raw.slice(r[1],end))+(end<raw.length?'…':'')+'</span>';
+}
+function plainPreview(flat,len){len=len||200;return esc(flat.substring(0,len))+(flat.length>len?'…':'');}
+// Карточка фильтри (бўш сўров → ҳаммаси). buildGrid ишлатади.
 function matches(h,q){
   if(!q)return true;
-  const lq=q.toLowerCase();
-  const nq=normAr(q);
-  return h.text.toLowerCase().includes(lq)
-    ||h.narrator.toLowerCase().includes(lq)
-    ||h.title.toLowerCase().includes(lq)
-    ||(h.arabic&&normAr(h.arabic).includes(nq))
-    ||(h.source&&h.source.toLowerCase().includes(lq));
+  const si=SIById[h.id];if(!si)return false;
+  const qf=foldUz(q),qfa=foldAr(q);
+  return !!(matchUz(si.title,qf)||bestBody(si,h,qf,qfa,q));
 }
 function buildGrid(q){
   const grid=document.getElementById('hadisGrid');
@@ -750,38 +846,6 @@ function setHash(h){
   routing=true;
   location.hash=h;
   setTimeout(()=>{routing=false;},0);
-}
-function snippet(text,q,len=200){
-  const flat=text.replace(/\n/g,' ');
-  if(!q)return esc(flat.substring(0,len))+(flat.length>len?'…':'');
-  const i=flat.toLowerCase().indexOf(q.toLowerCase());
-  let start=0,end=len;
-  if(i>=0){
-    start=Math.max(0,i-60);
-    end=Math.min(flat.length,start+len);
-  }
-  const piece=(start>0?'…':'')+flat.substring(start,end)+(end<flat.length?'…':'');
-  return highlight(piece,q);
-}
-function bestSnippet(h,q,len=200){
-  const lq=q.toLowerCase();
-  if(h.text.toLowerCase().includes(lq))return snippet(h.text,q,len);
-  if(h.narrator.toLowerCase().includes(lq))return '<em>Ровий:</em> '+highlight(h.narrator,q);
-  if(h.source&&h.source.toLowerCase().includes(lq))return '<em>Манба:</em> '+highlight(h.source,q);
-  if(h.arabic){
-    const nq=normAr(q);
-    const nar=normAr(h.arabic);
-    const ai=nar.indexOf(nq);
-    if(ai>=0){
-      const start=Math.max(0,ai-40);
-      const end=Math.min(h.arabic.length,start+160);
-      const piece=(start>0?'…':'')+h.arabic.substring(start,end)+(end<h.arabic.length?'…':'');
-      const safe=esc(piece);
-      const re=new RegExp('('+esc(q).replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'|'+esc(q).split('').join('[ؐ-ًؚ-ٰٟۖ-ۭ࣓-ࣿ]*').replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','g');
-      return '<span lang="ar" dir="rtl" style="font-family:\'Scheherazade New\',serif;">'+safe+'</span>';
-    }
-  }
-  return snippet(h.text,q,len);
 }
 const FS_MIN=0.85,FS_MAX=1.35,FS_STEP=0.1;
 function applyFont(){
@@ -1078,15 +1142,25 @@ const App={
       if(titleEl)titleEl.textContent='Барча ҳадислар';
       return;
     }
-    const res=QD.filter(h=>matches(h,v));
+    const qf=foldUz(v),qfa=foldAr(v);
     if(titleEl)titleEl.textContent='Қидириш натижалари';
-    if(!res.length){
+    const out=[];
+    QD.forEach(h=>{
+      const si=SIById[h.id];
+      const titleM=matchUz(si.title,qf);
+      const bodyM=bestBody(si,h,qf,qfa,v);
+      if(!titleM&&!bodyM)return;
+      const label=titleM?hlFull(h.title,titleM):esc(h.title);
+      const body=bodyM?renderBody(si,h,bodyM):plainPreview(si.textFlat);
+      out.push(`<div class="result-item" onclick="App.open(${h.id})" role="button" aria-label="${esc(h.id+'-ҳадис: '+h.title)}"><div class="result-label">${h.id}-ҳадис — ${label}</div><div class="result-text">${body}</div></div>`);
+    });
+    if(!out.length){
       grid.innerHTML='<div class="no-results"><div class="no-results-icon">🔍</div><p>Натижа топилмади</p></div>';
       document.getElementById('gridCount').textContent='0';
       return;
     }
-    grid.innerHTML=res.map(h=>`<div class="result-item" onclick="App.open(${h.id})" role="button" aria-label="${esc(h.id+'-ҳадис: '+h.title)}"><div class="result-label">${h.id}-ҳадис — ${highlight(h.title,v)}</div><div class="result-text">${bestSnippet(h,v)}</div></div>`).join('');
-    document.getElementById('gridCount').textContent=res.length+' та';
+    grid.innerHTML=out.join('');
+    document.getElementById('gridCount').textContent=out.length+' та';
   }
 };
 function applyRoute(){
@@ -1129,7 +1203,7 @@ window.addEventListener('scroll',function(){
 window.addEventListener('hashchange',applyRoute);
 th=gs('th')||'dark';
 if(!gs('lang')&&gs('showArabic')==='1')ss('lang','ar');
-apTh();applyFont();buildGrid('');
+apTh();applyFont();buildIndex();buildGrid('');
 applyRoute();
 if('serviceWorker' in navigator){
   if(navigator.serviceWorker.controller){
