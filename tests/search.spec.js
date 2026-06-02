@@ -88,6 +88,20 @@ function ok(name, cond) {
     ok('арабча "اعمال" → натижа (диакритикасиз)', r.length > 0 && r.some(x => x.marks.length > 0));
     ok('арабча натижада rtl span', r.some(x => /dir="rtl"/.test(x.html)));
 
+    // 6b) РАҚАМ/МАНБА ҚИДИРУВ
+    await search('5');
+    r = await results();
+    ok('"5" → 5-ҳадис юқорида', r.length > 0 && r[0].id === 5);
+    await search('5-ҳадис'); // 5-ҳадис
+    r = await results();
+    ok('"5-ҳадис" → 5-ҳадис юқорида', r.length > 0 && r[0].id === 5);
+    await search('ҳадис 5'); // ҳадис 5
+    r = await results();
+    ok('"ҳадис 5" → 5-ҳадис юқорида', r.length > 0 && r[0].id === 5);
+    await search('999');
+    const big = await page.evaluate(() => !!document.querySelector('#hadisGrid .no-results'));
+    ok('"999" (диапазондан ташқари) рақам-карта бермайди', big === true);
+
     // 7) HTML-ИНЪЕКЦИЯ йўқ
     await search('<img src=x onerror=alert(1)>');
     const injected = await page.evaluate(() => !!document.querySelector('#hadisGrid img'));
