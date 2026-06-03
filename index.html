@@ -11,12 +11,12 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 <title>Имом Нававийнинг «Қирқ ҳадис» тўплами</title>
-<link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Amiri:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Roboto:wght@400;500;600;700&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Amiri:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;600;700&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
-:root{--gold:#c9a84c;--gold-light:#e8d08a;--gold-dark:#8b6914;--bg:#0d0b07;--surface:#1c1710;--surface2:#2d2718;--surface3:#221d11;--border:#3a3020;--border2:#4a4030;--text:#e8dcc8;--text-dim:#9a8f78;--text-muted:#5a5040;--izoh:#b8d4a8;--izoh-bg:rgba(74,110,64,0.1);--izoh-border:#4a6e40}
+:root{--gold:#c9a84c;--gold-light:#e8d08a;--gold-dark:#8b6914;--bg:#0d0b07;--surface:#1c1710;--surface2:#2d2718;--surface3:#221d11;--border:#3a3020;--border2:#4a4030;--text:#e8dcc8;--text-dim:#9a8f78;--text-muted:#5a5040;--izoh:#b8d4a8;--izoh-bg:rgba(74,110,64,0.1);--izoh-border:#4a6e40;--ui:-apple-system,BlinkMacSystemFont,'SF Pro Text','SF Pro Display','Helvetica Neue','Inter','Roboto',sans-serif}
 .light{--bg:#f5f0e8;--surface:#ede6d6;--surface2:#e0d8c4;--surface3:#d8cfba;--border:#c8bea8;--border2:#b8ae98;--text:#2a2218;--text-dim:#5a5040;--text-muted:#8a8070;--gold:#8b6914;--gold-light:#6b5010;--gold-dark:#5a4010;--izoh:#2a4a20;--izoh-bg:rgba(74,110,64,0.08);--izoh-border:#4a6e40}
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;min-height:100vh;transition:background .3s,color .3s;padding-bottom:calc(72px + env(safe-area-inset-bottom));touch-action:manipulation;-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--text);font-family:var(--ui);min-height:100vh;transition:background .3s,color .3s;padding-bottom:calc(72px + env(safe-area-inset-bottom));touch-action:manipulation;-webkit-text-size-adjust:100%}
 .home-hero{padding:56px 14px 36px;border-bottom:1px solid var(--border)}
 .unvon{position:relative;max-width:560px;margin:0 auto;padding:16px 20px;text-align:center}
 .bismillah-hero{font-family:'Amiri',serif;font-size:42px;color:var(--gold);direction:rtl;line-height:1.6;margin:4px 0 22px;font-weight:400}
@@ -28,7 +28,7 @@ body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;min-
 .home-sub{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--text-dim);font-style:italic;margin-top:14px}
 .hadis-grid-wrap{padding:24px 12px 80px;max-width:720px;margin:0 auto}
 .main-search-wrap{max-width:720px;margin:0 auto;padding:20px 12px 0;position:relative}
-.main-search-input{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'Roboto',sans-serif;font-size:16px;padding:13px 44px 13px 18px;border-radius:10px;outline:none;transition:border-color .2s}
+.main-search-input{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:var(--ui);font-size:16px;padding:13px 44px 13px 18px;border-radius:10px;outline:none;transition:border-color .2s}
 .main-search-input:focus{border-color:var(--gold-dark);background:var(--surface2)}
 .main-search-input::placeholder{color:var(--text-muted)}
 .main-search-icon{position:absolute;right:26px;top:calc(50% + 10px);transform:translateY(-50%);color:var(--text-muted);pointer-events:none;font-size:16px;line-height:1}
@@ -74,7 +74,7 @@ body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;min-
 .hadis-text mark{background:rgba(201,168,76,.25);color:var(--gold-light);border-radius:2px;padding:0 2px}
 .lang-tabs{display:flex;width:-moz-fit-content;width:fit-content;margin:8px auto 14px;background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:3px;gap:2px}
 .lang-tabs[hidden]{display:none}
-.lang-tab{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:transparent;border:none;color:var(--text-dim);font-family:'Roboto',sans-serif;font-size:12px;padding:6px 18px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:color .15s,background .15s;letter-spacing:.02em;line-height:1;border-radius:999px}
+.lang-tab{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:transparent;border:none;color:var(--text-dim);font-family:var(--ui);font-size:12px;padding:6px 18px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:color .15s,background .15s;letter-spacing:.02em;line-height:1;border-radius:999px}
 .lang-tab span[lang="ar"]{font-family:'Amiri',serif;font-size:14px}
 .lang-tab:hover,.lang-tab:active{color:var(--gold)}
 .lang-tab.active{color:var(--gold);background:var(--surface2)}
@@ -82,7 +82,7 @@ body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;min-
 .hadis-tool-group{display:inline-flex;align-items:stretch;background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
 .hadis-tool-group .hadis-tool-btn{background:transparent;border:none;border-right:1px solid var(--border);border-radius:0}
 .hadis-tool-group .hadis-tool-btn:last-child{border-right:none}
-.hadis-tool-btn{display:inline-flex;align-items:center;justify-content:center;background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-family:'Roboto',sans-serif;font-size:13px;padding:8px 14px;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:10px;transition:color .15s,background .15s,border-color .15s;line-height:1;min-height:34px;letter-spacing:.02em;gap:6px}
+.hadis-tool-btn{display:inline-flex;align-items:center;justify-content:center;background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-family:var(--ui);font-size:13px;padding:8px 14px;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:10px;transition:color .15s,background .15s,border-color .15s;line-height:1;min-height:34px;letter-spacing:.02em;gap:6px}
 .hadis-tool-btn:hover,.hadis-tool-btn:active{color:var(--gold);background:var(--surface2)}
 .hadis-tool-btn.disabled{opacity:.35;pointer-events:none}
 .hadis-tool-btn.copied{color:var(--gold);border-color:var(--gold);background:var(--surface2)}
@@ -94,6 +94,11 @@ body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;min-
 .hadis-arabic-label{display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:.15em;text-transform:uppercase;direction:ltr;text-align:left;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border)}
 .hadis-narrator{margin-top:20px;padding:13px 16px;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--gold-dark);border-radius:0 8px 8px 0;font-size:12px;line-height:1.7;color:var(--text-dim)}
 .hadis-source{margin-top:12px;padding:13px 16px;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--gold-dark);border-radius:0 8px 8px 0;font-size:12px;line-height:1.7;color:var(--text-dim)}
+.pdf-dl{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);color:var(--gold);text-decoration:none;font-family:var(--ui);font-size:13px;font-weight:500;padding:10px 18px;border-radius:999px;transition:background .15s,border-color .15s;-webkit-tap-highlight-color:transparent}
+.pdf-dl:hover{background:var(--surface2);border-color:var(--gold-dark)}
+.pdf-dl svg{flex-shrink:0}
+.home-dl-wrap{text-align:center;margin:16px auto 0;max-width:720px;padding:0 12px}
+.hadis-dl-wrap{margin-top:18px;text-align:center}
 .khatima{margin-top:44px;padding-top:32px;border-top:1px solid var(--border);text-align:center}
 .khatima-stars{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:20px;color:var(--gold-dark);font-size:16px;letter-spacing:6px}
 .khatima-stars::before,.khatima-stars::after{content:'';flex:1;max-width:80px;height:1px;background:var(--border)}
@@ -123,9 +128,9 @@ body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;min-
 .app-footer-line{display:flex;align-items:center;justify-content:center;gap:10px;color:var(--gold-dark);margin-bottom:10px}
 .app-footer-line::before,.app-footer-line::after{content:'';flex:1;max-width:40px;height:1px;background:var(--border)}
 .app-footer-dot{width:4px;height:4px;border-radius:50%;background:var(--gold-dark)}
-.app-footer-text{font-family:'Roboto',sans-serif;font-size:13px;color:var(--text-dim);line-height:1.6}
+.app-footer-text{font-family:var(--ui);font-size:13px;color:var(--text-dim);line-height:1.6}
 .app-footer-name{color:var(--gold);font-weight:500}
-.app-footer-sub{font-family:'Roboto',sans-serif;font-size:10px;color:var(--text-muted);letter-spacing:.12em;margin-top:4px;font-style:normal}
+.app-footer-sub{font-family:var(--ui);font-size:10px;color:var(--text-muted);letter-spacing:.12em;margin-top:4px;font-style:normal}
 .muq-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;cursor:pointer;transition:border-color .2s,background .2s;position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;gap:14px;margin-bottom:10px}
 .muq-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--gold-dark);opacity:0;transition:opacity .2s}
 .muq-card:active,.muq-card:hover{border-color:var(--gold-dark);background:var(--surface2)}
@@ -154,13 +159,13 @@ body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;min-
 .muq-footer-amin{display:block;font-size:18px;color:var(--gold);font-weight:600;margin-top:10px;font-style:normal}
 .muq-nav{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:20px}
 .muq-nav .nav-btn{border-right:none;border-radius:999px;background:var(--surface);border:1px solid var(--border);box-shadow:0 1px 2px rgba(0,0,0,.15);padding:10px 22px}
-.install-banner{position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));max-width:480px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,.35),0 2px 6px rgba(0,0,0,.2);z-index:1000;animation:install-slide-up .4s ease-out;font-family:'Roboto',sans-serif}
+.install-banner{position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));max-width:480px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,.35),0 2px 6px rgba(0,0,0,.2);z-index:1000;animation:install-slide-up .4s ease-out;font-family:var(--ui)}
 .install-banner[hidden]{display:none}
 .install-banner-icon{width:44px;height:44px;border-radius:10px;flex-shrink:0}
 .install-banner-text{flex:1;min-width:0;color:var(--text);line-height:1.35}
 .install-banner-text strong{display:block;font-size:14px;font-weight:600;color:var(--text);margin-bottom:2px}
 .install-banner-text p{margin:0;font-size:12px;color:var(--text-dim);font-weight:400}
-#install-banner-action{flex-shrink:0;background:var(--gold);color:var(--bg);border:none;border-radius:999px;padding:9px 18px;font-family:'Roboto',sans-serif;font-size:13px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s,transform .1s}
+#install-banner-action{flex-shrink:0;background:var(--gold);color:var(--bg);border:none;border-radius:999px;padding:9px 18px;font-family:var(--ui);font-size:13px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s,transform .1s}
 #install-banner-action:active{transform:scale(.96)}
 #install-banner-action:hover{background:var(--gold-light)}
 #install-banner-close{flex-shrink:0;background:transparent;border:none;color:var(--text-muted);font-size:18px;line-height:1;padding:6px;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:999px;transition:color .15s,background .15s}
@@ -187,6 +192,11 @@ body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;min-
 <input type="text" class="main-search-input" id="searchInput" placeholder="Ҳадислардан қидириш..." aria-label="Ҳадислар бўйича қидириш">
 <div class="main-search-icon">🔍</div>
 <button type="button" class="main-search-clear" id="searchClear" aria-label="Қидирув матнини тозалаш">×</button>
+</div>
+<div class="home-dl-wrap">
+<a class="pdf-dl" href="https://github.com/abuyahyo/qirq-hadis/releases/download/pdf/qirq-hadis.pdf" download aria-label="Тўлиқ китобни PDF форматда юклаб олиш">
+<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+<span>Тўлиқ китобни PDF юклаб олиш</span></a>
 </div>
 <div class="hadis-grid-wrap">
 <div class="grid-header">
@@ -228,6 +238,11 @@ body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;min-
 <div class="hadis-text" id="hadisText"></div>
 <div class="hadis-narrator" id="hadisNarrator"></div>
 <div class="hadis-source" id="hadisSource"></div>
+<div class="hadis-dl-wrap">
+<a class="pdf-dl" id="hadisPdfLink" href="#" download>
+<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+<span>Бу ҳадисни PDF юклаб олиш</span></a>
+</div>
 <div class="hadis-tools" role="toolbar" aria-label="Бошқарув">
 <div class="hadis-tool-group">
 <button class="hadis-tool-btn" id="fontDecBtn" onclick="App.adjustFont(-1)" title="Шрифтни кичрайтириш" aria-label="Шрифт ўлчамини камайтириш"><span class="hadis-tool-fs-small">A</span>−</button>
@@ -247,7 +262,7 @@ body{background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;min-
 <button class="nav-btn nav-btn-home" onclick="App.goHome()" aria-label="Бош саҳифага қайтиш">
 <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8M5 9.5V20h14V9.5"/></svg>
 </button>
-<button class="nav-btn" id="muqShareBtn" onclick="App.shareMuqaddima()" style="gap:8px;font-family:'Roboto',sans-serif;font-size:14px" title="Расм қилиб улашиш" aria-label="Муқаддимани расм қилиб улашиш">
+<button class="nav-btn" id="muqShareBtn" onclick="App.shareMuqaddima()" style="gap:8px;font-family:var(--ui);font-size:14px" title="Расм қилиб улашиш" aria-label="Муқаддимани расм қилиб улашиш">
 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
 <span>Улашиш</span></button>
 </div>
@@ -817,6 +832,7 @@ function openHadis(n,skipRoute){
   document.getElementById('hadisText').innerHTML=esc(h.text).replace(/\n/g,'<br>');
   document.getElementById('hadisNarrator').innerHTML='<strong>Ривояти:</strong> '+esc(h.narrator);
   document.getElementById('hadisSource').innerHTML='<strong>Манба:</strong> '+esc(h.source);
+  document.getElementById('hadisPdfLink').href='https://github.com/abuyahyo/qirq-hadis/releases/download/pdf/hadis-'+String(n).padStart(2,'0')+'.pdf';
   document.getElementById('prevBtn').className='nav-btn'+(n<=1?' disabled':'');
   document.getElementById('nextBtn').className='nav-btn'+(n>=QD.length?' disabled':'');
   const tabs=document.getElementById('langTabs');
@@ -979,7 +995,7 @@ const SHARE_PALETTE={
   bgTop:'#f5f0e8',bgBot:'#ede6d6',
   text:'#2a2218',dim:'#5a5040',gold:'#8b6914',goldDark:'#5a4010'
 };
-const SHARE_FF='Roboto, system-ui, -apple-system, "Segoe UI", Arial, sans-serif';
+const SHARE_FF='-apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", Roboto, Arial, sans-serif';
 const SHARE_URL='abuyahyo.github.io/qirq-hadis';
 function _renderShareSlide(ctx,W,H,s,idx,total){
   const p=s.palette;

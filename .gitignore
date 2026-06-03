@@ -1,0 +1,10 @@
+# Генерация қилинган PDF файллар — repo'га commit ҚИЛИНМАЙДИ.
+# Улар GitHub Releases (тег: pdf) орқали тарқатилади. Қайта яратиш:  python3 build_pdf.py
+pdf/
+qirq-hadis-pdf.zip
+
+# Вақтинчалик/генерация артефактлари
+.gen-icons.js
+.shot.js
+__pycache__/
+*.pyc
