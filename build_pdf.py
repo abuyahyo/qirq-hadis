@@ -43,8 +43,14 @@ GOLD_HI = (122, 92, 17)   # бир оз тўқроқ олтин (чизиқ)
 DIM = (120, 113, 96)      # header/footer кулранг
 QUOTE = (90, 80, 64)      # цитата матни (#5a5040)
 
-BOOK_TITLE = "«Қирқ ҳадис» тўплами"
-BOOK_AUTHOR = "Имом Нававий раҳимаҳуллоҳ"
+# — Муқова (намунага мос: оқ фон, ўчроқ яшил сарлавҳа, минимал) —
+COVER_GREEN = (78, 107, 79)   # сарлавҳа (ўчроқ яшил, намунадаги ранг)
+COVER_DARK = (51, 51, 51)     # муаллиф/субтитр (қора-кулранг)
+COVER_GRAY = (140, 140, 140)  # URL ва ажратувчи чизиқ
+
+BOOK_TITLE = "«Қирқ ҳадис»"
+BOOK_AUTHOR = "Имом Нававий"
+BOOK_SITE = "https://abuyahyo.github.io/qirq-hadis/"
 RUN_HEADER = "Имом Нававий — Қирқ ҳадис"
 
 
@@ -84,6 +90,7 @@ class Book(FPDF):
         self.set_auto_page_break(True, margin=18)
         self.section_title = RUN_HEADER
         self.on_cover = False
+        self.cover_pages = set()   # footer deferred — qaysi saҳifa muqova ekanini белгилаймиз
         self._register_fonts()
         self.set_fallback_fonts(["amiri"])
 
@@ -109,12 +116,15 @@ class Book(FPDF):
             self.text_shaping = saved
 
     def _draw_header(self):
-        # ҳар саҳифага оч-крем фон
-        self.set_fill_color(*CREAM)
-        self.rect(0, 0, self.w, self.h, style="F")
         if self.on_cover:
+            # муқова — намунадагидек оқ фон, running header йўқ
+            self.set_fill_color(255, 255, 255)
+            self.rect(0, 0, self.w, self.h, style="F")
             self.set_y(self.t_margin)
             return
+        # қолган саҳифаларга оч-крем фон
+        self.set_fill_color(*CREAM)
+        self.rect(0, 0, self.w, self.h, style="F")
         self.set_y(10)
         self.set_font("inter", "", 8.5)
         self.set_text_color(*DIM)
@@ -136,12 +146,12 @@ class Book(FPDF):
             self.text_shaping = saved
 
     def _draw_footer(self):
-        if self.on_cover:
-            return
+        is_cover = self.page in self.cover_pages
         self.set_y(-14)
-        self.set_font("inter", "", 8.5)
-        self.set_text_color(*DIM)
-        self.cell(0, 6, f"— {self.page_no()} —", align="C")
+        self.set_font("inter", "I" if is_cover else "", 9 if is_cover else 8.5)
+        self.set_text_color(*(COVER_GRAY if is_cover else DIM))
+        label = str(self.page_no()) if is_cover else f"— {self.page_no()} —"
+        self.cell(0, 6, label, align="C")
 
     # — ёрдамчилар —
     def _uz(self, text, size=13, h=6.6, style="", color=TEXT, align="J", indent=0):
@@ -176,37 +186,44 @@ class Book(FPDF):
 
     # ── Бўлимлар ──
     def add_cover(self):
+        # Намунага мос минимал муқова: оқ фон, катта яшил сарлавҳа, italic
+        # муаллиф, қисқа ажратувчи чизиқ, иккита марказий қатор, пастда сайт URL.
         self.on_cover = True
         self.add_page()
-        self.ln(34)
-        self.set_text_color(*GOLD)
-        self.set_font("inter", "B", 30)
-        self.cell(0, 16, BOOK_TITLE, align="C",
-                  new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-        self.ln(4)
-        # олтин ажратувчи чизиқ
-        cx = self.w / 2
-        self.set_draw_color(*GOLD)
-        self.set_line_width(0.5)
-        self.line(cx - 28, self.get_y(), cx + 28, self.get_y())
-        self.ln(10)
-        self.set_text_color(*TEXT)
-        self.set_font("inter", "", 14)
+        self.cover_pages.add(self.page)
+        self.set_y(self.h * 0.28)
+        # Сарлавҳа
+        self.set_text_color(*COVER_GREEN)
+        self.set_font("inter", "B", 33)
+        self.multi_cell(0, 15, BOOK_TITLE, align="C",
+                        new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+        self.ln(5)
+        # Муаллиф (italic)
+        self.set_text_color(*COVER_DARK)
+        self.set_font("inter", "I", 16)
         self.cell(0, 9, BOOK_AUTHOR, align="C",
                   new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-        self.ln(2)
-        self.set_text_color(*DIM)
+        self.ln(9)
+        # Қисқа марказий ажратувчи чизиқ
+        cx = self.w / 2
+        self.set_draw_color(*COVER_GRAY)
+        self.set_line_width(0.4)
+        self.line(cx - 32, self.get_y(), cx + 32, self.get_y())
+        self.ln(13)
+        # Иккита марказий қатор
+        self.set_text_color(*COVER_DARK)
+        self.set_font("inter", "", 14)
+        self.cell(0, 9, "Ўзбекча ва арабча", align="C",
+                  new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+        self.ln(5)
+        self.cell(0, 9, "Тўлиқ тўплам — 42 ҳадис", align="C",
+                  new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+        # Пастроқда сайт URL (italic, кулранг)
+        self.set_y(self.h * 0.72)
+        self.set_text_color(*COVER_GRAY)
         self.set_font("inter", "I", 12)
-        self.cell(0, 8, "Қирқ икки ҳадис — ўзбекча ва арабча", align="C",
+        self.cell(0, 8, BOOK_SITE, align="C",
                   new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-        # пастда бисмиллоҳ (арабча)
-        self.set_y(self.h - 34)
-        self.set_font("amiri", "", 18)
-        self.set_text_color(*GOLD)
-        self.set_text_shaping(use_shaping_engine=True, direction="rtl")
-        self.cell(0, 12, "بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيمِ", align="C",
-                  new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-        self.set_text_shaping(use_shaping_engine=False)
         self.on_cover = False
 
     def add_muqaddima(self, blocks):
