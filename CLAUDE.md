@@ -10,6 +10,10 @@ manifest.json      — PWA манифест (uz, standalone, portrait)
 apple-touch-icon.png  — 180×180 iOS иконка
 icon-192.png          — PWA иконка
 icon-512.png          — PWA иконка
+build_pdf.py       — index.html'дан чиройли терилган PDF генератори (fpdf2)
+fonts/Inter/       — Inter TTF (UI/PDF, SF'га яқин OFL шрифт, кирилл)
+fonts/Amiri/       — Amiri TTF (арабча, RTL, PDF fallback)
+pdf/               — генерация қилинган PDF (gitignore — Releases орқали тарқалади)
 CLAUDE.md          — шу файл
 ```
 
@@ -199,3 +203,34 @@ console.log('Total:',QD.length,'Last id:',QD[QD.length-1].id);"
 - **JSON структураси** ўзгартирилмайди (id, title, narrator, text, source, arabic). Янги майдон қўшилса, JS ҳам янгиланиши керак.
 - **`text-indent` ва паттернлар** — баъзи CSS қоидалари (масалан `text-indent:0`) inline стилда учрайди (муқаддима охиридаги дуо). Уларни алмаштирмаслик.
 - **PWA test:** манифест `start_url`, `scope` ./'дан бошланади, шу учун repo root'дан хостинг қилинса ишлайди.
+
+## PDF генерация ва тарқатиш
+
+`build_pdf.py` — `index.html`'даги `QD` массиви ва муқаддима матнидан A5 форматли,
+чиройли терилган PDF яратади. Сайтдаги форматлаш айнан такрорланади: марказдаги
+олтин сарлавҳа, `N-ҲАДИС` рақами, ўзбекча матн, арабча (RTL), `Ривояти:` / `Манба:`.
+
+```bash
+pip install fpdf2 uharfbuzz          # _cffi_backend хатоси → pip install --upgrade cffi
+python3 build_pdf.py                 # ҳаммаси: тўлиқ + 42 алоҳида файл
+python3 build_pdf.py --full          # фақат pdf/qirq-hadis.pdf
+python3 build_pdf.py --hadis         # фақат pdf/hadis-NN.pdf (ASCII номлар)
+python3 build_pdf.py --sample        # намуна: муқаддима + 1–2-ҳадис (тасдиқ учун)
+```
+
+- **Шрифт:** UI/PDF — Inter (San Francisco'га яқин, OFL; "iOS шрифти" ўрнига). Иловада
+  `--ui` CSS variable Apple system stack'ни (`-apple-system…`) биринчи қўяди — iOS/Mac'да
+  ҳақиқий SF, бошқа жойда Inter. Арабча — Amiri (`set_fallback_fonts(['amiri'])`).
+- **Арабча shaping** ФАҚАТ арабча блок учун вақтинча ёқилади
+  (`set_text_shaping(use_shaping_engine=True, direction="rtl")` → multi_cell → `False`).
+  Глобал ёқилса файл бир неча баробар шишади. Running header/footer ичида shaping
+  вақтинча `None` қилинади (арабча блок ўртасида авто саҳифа-узилиши бидиректцияни
+  бузмаслиги учун).
+- **Тарқатиш:** `pdf/` commit ҚИЛИНМАЙДИ (`.gitignore`). Файллар **GitHub Releases**
+  (тег: `pdf`) орқали тарқалади. Ҳаволалар:
+  `https://github.com/abuyahyo/qirq-hadis/releases/download/pdf/<файл>`
+  (`qirq-hadis.pdf`, `hadis-01.pdf` … `hadis-42.pdf`). Бош саҳифада "Тўлиқ китобни PDF",
+  ҳар ҳадис саҳифасида "Бу ҳадисни PDF" ҳаволаси (`#hadisPdfLink`, `openHadis`'да set).
+- **Релиз:** `python3 build_pdf.py` → `pdf/` ни zip қилиб (`qirq-hadis-pdf.zip`) `pdf`
+  тегли релизга барча 43 файлни asset қилиб юкланг. Кейин бир-икки ҳаволани
+  `curl -o /dev/null -w "%{http_code}"` билан 200 эканини текширинг.
